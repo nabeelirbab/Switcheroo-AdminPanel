@@ -14,26 +14,17 @@ import IconButton from '@mui/material/IconButton';
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 
-// ----------------------------------------------------------------------
-
-const users = [
-  {
-    id: 1,
-    email: 'bac@gmail.com',
-    totalitems: 4,
-    matcheditems: 2,
-  },
-];
-
 export default function UserTableRow({
   selected,
   name,
   email,
   totalitems,
-  matcheditems,
+  matchedItems,
   avatarUrl,
   status,
   handleClick,
+  handleDelete,
+  lastname,
 }) {
   const [open, setOpen] = useState(null);
 
@@ -56,31 +47,19 @@ export default function UserTableRow({
           <Stack direction="row" alignItems="center" spacing={2}>
             <Avatar alt={name} src={avatarUrl} />
             <Typography variant="subtitle2" noWrap>
-              {name}
+              {name} {lastname}
             </Typography>
           </Stack>
         </TableCell>
 
-        <TableCell>
-          {users.map((user) => (
-            <div key={user.email}>{user.email}</div>
-          ))}
-        </TableCell>
+        <TableCell>{email}</TableCell>
 
-        <TableCell >
-          {users.map((user) => (
-            <div key={user.totalitems}>{user.totalitems}</div>
-          ))}
-        </TableCell>
+        <TableCell>{totalitems}</TableCell>
 
-        <TableCell align="center">
-          {users.map((user) => (
-            <div key={user.matcheditems}>{user.matcheditems}</div>
-          ))}
-        </TableCell>
+        <TableCell align="center">{matchedItems}</TableCell>
 
         <TableCell>
-          <Label color={(status === 'banned' && 'error') || 'success'}>{status}</Label>
+          <Label color={(status === 'banned' && 'error') || 'success'}>Active</Label>
         </TableCell>
 
         <TableCell align="right">
@@ -105,7 +84,13 @@ export default function UserTableRow({
           Edit
         </MenuItem>
 
-        <MenuItem onClick={handleCloseMenu} sx={{ color: 'error.main' }}>
+        <MenuItem
+          onClick={() => {
+            handleDelete();
+            handleCloseMenu();
+          }}
+          sx={{ color: 'error.main' }}
+        >
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Delete
         </MenuItem>
@@ -118,8 +103,10 @@ UserTableRow.propTypes = {
   avatarUrl: PropTypes.any,
   email: PropTypes.any,
   handleClick: PropTypes.func,
-  matcheditems: PropTypes.any,
+  handleDelete: PropTypes.func,
+  matchedItems: PropTypes.any,
   name: PropTypes.any,
+  lastname:PropTypes.any,
   totalitems: PropTypes.any,
   selected: PropTypes.any,
   status: PropTypes.string,

@@ -22,11 +22,11 @@ const navConfig = [
     path: '/reported-products',  
     icon: icon('ic_cart'),
   },
-  {
-    title: 'reported user',
-    path: '/reported-user',
-    icon: icon('ic_blog'),
-  },
+  // {
+  //   title: 'reported user',
+  //   path: '/reported-user',
+  //   icon: icon('ic_blog'),
+  // },
   // {
   //   title: 'login',
   //   path: '/login',

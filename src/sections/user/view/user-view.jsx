@@ -3,16 +3,18 @@ import { useState } from 'react';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
-// import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { users } from 'src/_mock/user';
+// import { users } from 'src/_mock/user';
 
 // import Iconify from 'src/components/iconify';
+
+import { gql, useQuery, useMutation } from '@apollo/client';
+
 import Scrollbar from 'src/components/scrollbar';
 
 import TableNoData from '../table-no-data';
@@ -21,6 +23,37 @@ import UserTableHead from '../user-table-head';
 import TableEmptyRows from '../table-empty-rows';
 import UserTableToolbar from '../user-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
+
+const GET_ALL_USERS = gql`
+  query getAllUsers {
+    users(limit: 100) {
+      data {
+        id
+        username
+        firstName
+        lastName
+        email
+        dateOfBirth
+        distance
+        itemCount
+        matchedItemCount
+        latitude
+        longitude
+        gender
+        blurb
+        avatarUrl
+      }
+      totalCount
+      hasNextPage
+    }
+  }
+`;
+
+const DELETE_USER = gql`
+  mutation DeleteUser($userId: ID!) {
+    deleteUser(userId: $userId)
+  }
+`;
 
 // ----------------------------------------------------------------------
 
@@ -37,6 +70,16 @@ export default function UserPage() {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
+  const { loading, error, data, refetch } = useQuery(GET_ALL_USERS);
+  const [deleteUser] = useMutation(DELETE_USER);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+  console.log(data, '.........');
+
+  const userss = data.users.data;
+  console.log(userss, '...');
+
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
     if (id !== '') {
@@ -47,7 +90,7 @@ export default function UserPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = users.map((n) => n.name);
+      const newSelecteds = userss.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -86,8 +129,40 @@ export default function UserPage() {
     setFilterName(event.target.value);
   };
 
+  // const handleDeleteUser = async (userId) => {
+  //   try {
+  //     await deleteUser({ variables: { userIds: [userId] } });
+  //     // After deletion, refetch the data to update the UI
+  //     refetch();
+  //   } catch (err) {
+  //     console.error('Error deleting user:', err);
+  //   }
+  // };
+
+  const handleDeleteUser = async (userId) => {
+    // Ensure userId is defined and has a value
+    if (!userId) {
+      // Handle missing userId case
+      return;
+    }
+  
+    const userIds = [userId]; // Wrap the ID in an array
+  
+    try {
+      await deleteUser({ variables: { userIds } }); // Use the correct mutation name
+      // After deletion, refetch the data to update the UI
+      refetch();
+    } catch (err) {
+      console.error('Error deleting user:', err);
+    }
+  };
+
+  
+  
+  
+
   const dataFiltered = applyFilter({
-    inputData: users,
+    inputData: userss,
     comparator: getComparator(order, orderBy),
     filterName,
   });
@@ -97,11 +172,7 @@ export default function UserPage() {
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">Reported Users</Typography>
-
-        {/* <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
-          New User
-        </Button> */}
+        <Typography variant="h4">Switcheroo Users</Typography>
       </Stack>
 
       <Card>
@@ -117,7 +188,7 @@ export default function UserPage() {
               <UserTableHead
                 order={order}
                 orderBy={orderBy}
-                rowCount={users.length}
+                rowCount={userss.length}
                 numSelected={selected.length}
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
@@ -136,20 +207,23 @@ export default function UserPage() {
                   .map((row) => (
                     <UserTableRow
                       key={row.id}
-                      name={row.name}
-                      totalitems={row.totalitems}
+                      id={row.id}
+                      name={row.firstName}
+                      lastname={row.lastName}
+                      totalitems={row.itemCount}
                       status={row.status}
                       email={row.email}
                       avatarUrl={row.avatarUrl}
-                      isVerified={row.matcheditems}
-                      selected={selected.indexOf(row.name) !== -1}
-                      handleClick={(event) => handleClick(event, row.name)}
+                      matchedItems={row.matchedItemCount}
+                      selected={selected.indexOf(row.id) !== -1}
+                      handleClick={(event) => handleClick(event, row.id)} // Pass id
+                      handleDelete={() => handleDeleteUser(row.id)} 
                     />
                   ))}
 
                 <TableEmptyRows
                   height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, users.length)}
+                  emptyRows={emptyRows(page, rowsPerPage, userss.length)}
                 />
 
                 {notFound && <TableNoData query={filterName} />}
@@ -161,7 +235,7 @@ export default function UserPage() {
         <TablePagination
           page={page}
           component="div"
-          count={users.length}
+          count={userss.length}
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}
           rowsPerPageOptions={[5, 10, 25]}

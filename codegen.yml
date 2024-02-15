@@ -1,0 +1,8 @@
+overwrite: true
+schema: 'http://13.50.221.83/'
+documents: src/**/*.graphql
+generates:
+  src/graphql/generated/:
+    preset: 'client'
+    plugins: []
+src/graphql/generated/graphql.schema.json:
