@@ -15,27 +15,12 @@ import Label from 'src/components/label';
 // ----------------------------------------------------------------------
 
 export default function ShopProductCard({ product }) {
-  // const renderStatus = (
-  //   <Label
-  //     variant="filled"
-  //     color={(product.status === 'sale' && 'error') || 'info'}
-  //     sx={{
-  //       zIndex: 9,
-  //       top: 16,
-  //       right: 16,
-  //       position: 'absolute',
-  //       textTransform: 'uppercase',
-  //     }}
-  //   >
-  //     {product.status}
-  //   </Label>
-  // );
-
-  const renderImg = (
+  const renderImg = product.targetItem.map((item, index) => (
     <Box
+      key={index}
       component="img"
-      alt={product.name}
-      src={product.cover}
+      alt={product.title}
+      src={item.mainImageUrl}
       sx={{
         top: 0,
         width: 1,
@@ -44,46 +29,51 @@ export default function ShopProductCard({ product }) {
         position: 'absolute',
       }}
     />
-  );
+  ));
 
-  const renderPrice = (
-    <Typography variant="subtitle1">
-      <Typography
-        component="span"
-        variant="body1"
-        sx={{
-          color: 'text.disabled',
-          textDecoration: 'line-through',
-        }}
-      >
-        {/* {product.priceSale && fCurrency(product.priceSale)} */}
-      </Typography>
-      &nbsp;
-      {fCurrency(product.price)}
-    </Typography>
+  const renderPrice = product.targetItem && product.targetItem.length > 0 && (
+    <Stack direction="row" alignItems="center">
+      {product.targetItem.map((item, index) => (
+        <Typography key={index} variant="subtitle1">
+          <Typography
+            component="span"
+            variant="body1"
+            sx={{
+              color: 'text.disabled',
+              textDecoration: 'line-through',
+            }}
+          >
+            {product.priceSale && fCurrency(product.priceSale)}
+          </Typography>
+          &nbsp;
+          {item.askingPrice}
+        </Typography>
+      ))}
+    </Stack>
   );
 
   return (
     <Card>
-      <Box sx={{ pt: '100%', position: 'relative' }}>
-        {/* {product.status} */}
+      <Box sx={{ pt: '100%', position: 'relative' }}>{renderImg}</Box>
 
-        {renderImg}
-      </Box>
-
-      <Stack spacing={2} sx={{ p: 3 }}>
-        <Link color="inherit" underline="hover" variant="subtitle2" noWrap>
-          {product.name}
-        </Link>
+      <Stack spacing={2} sx={{ p: 2 }}>
+        {product.targetItem &&
+          product.targetItem.map((item, idx) => (
+            <Link key={idx} color="inherit" underline="hover" variant="subtitle2" noWrap>
+              {item.title}
+            </Link>
+          ))}
 
         <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <Typography>Reported By: Username</Typography>
+          <Typography>{product.title}</Typography>
           {renderPrice}
         </Stack>
       </Stack>
-      
+
       <TableCell>
-        <Label color="error">Delete</Label>
+        <Label sx={{ cursor: 'pointer' }} color="error">
+          Delete
+        </Label>
       </TableCell>
     </Card>
   );

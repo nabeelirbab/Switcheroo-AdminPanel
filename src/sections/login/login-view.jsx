@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
+// import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
@@ -32,7 +32,7 @@ export default function LoginView() {
 
   const handleClick = () => {
     // Check if email and password match
-    if (email === 'admin@switcheroo.com' && password === 'Admin@1234') {
+    if (email === 'Admin@switcherooapp.com' && password === 'Admin@1234') {
       // If match, proceed with navigation
       router.push('/dashboard');
     } else {
@@ -102,9 +102,9 @@ export default function LoginView() {
           )}
 
           <Stack direction="row" alignItems="center" justifyContent="flex-end" sx={{ my: 3 }}>
-            <Link variant="subtitle2" underline="hover">
+            {/* <Link variant="subtitle2" underline="hover">
               Forgot password?
-            </Link>
+            </Link> */}
           </Stack>
 
           <LoadingButton

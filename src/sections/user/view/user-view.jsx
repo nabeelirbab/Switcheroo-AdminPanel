@@ -49,9 +49,10 @@ const GET_ALL_USERS = gql`
   }
 `;
 
+
 const DELETE_USER = gql`
-  mutation DeleteUser($userId: ID!) {
-    deleteUser(userId: $userId)
+  mutation DeleteUser($userIds: [Uuid]!) {
+    deleteUser(userIds: $userIds)
   }
 `;
 
@@ -71,6 +72,7 @@ export default function UserPage() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const { loading, error, data, refetch } = useQuery(GET_ALL_USERS);
+
   const [deleteUser] = useMutation(DELETE_USER);
 
   if (loading) return <p>Loading...</p>;
@@ -78,7 +80,6 @@ export default function UserPage() {
   console.log(data, '.........');
 
   const userss = data.users.data;
-  console.log(userss, '...');
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -129,37 +130,19 @@ export default function UserPage() {
     setFilterName(event.target.value);
   };
 
-  // const handleDeleteUser = async (userId) => {
-  //   try {
-  //     await deleteUser({ variables: { userIds: [userId] } });
-  //     // After deletion, refetch the data to update the UI
-  //     refetch();
-  //   } catch (err) {
-  //     console.error('Error deleting user:', err);
-  //   }
-  // };
-
   const handleDeleteUser = async (userId) => {
-    // Ensure userId is defined and has a value
-    if (!userId) {
-      // Handle missing userId case
-      return;
-    }
-  
-    const userIds = [userId]; // Wrap the ID in an array
-  
     try {
-      await deleteUser({ variables: { userIds } }); // Use the correct mutation name
-      // After deletion, refetch the data to update the UI
+      console.log('userId passed to handleDeleteUser:', userId);
+      await deleteUser({
+        variables: {
+          userIds: [userId],
+        },
+      });
       refetch();
     } catch (err) {
       console.error('Error deleting user:', err);
     }
   };
-
-  
-  
-  
 
   const dataFiltered = applyFilter({
     inputData: userss,
@@ -216,8 +199,8 @@ export default function UserPage() {
                       avatarUrl={row.avatarUrl}
                       matchedItems={row.matchedItemCount}
                       selected={selected.indexOf(row.id) !== -1}
-                      handleClick={(event) => handleClick(event, row.id)} // Pass id
-                      handleDelete={() => handleDeleteUser(row.id)} 
+                      handleClick={(event) => handleClick(event, row.id)}
+                      handleDelete={() => handleDeleteUser(row.id)}
                     />
                   ))}
 
