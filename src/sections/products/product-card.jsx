@@ -46,7 +46,7 @@ export default function ShopProductCard({ product }) {
             {product.priceSale && fCurrency(product.priceSale)}
           </Typography>
           &nbsp;
-          {item.askingPrice}
+          {item.askingPrice} $
         </Typography>
       ))}
     </Stack>

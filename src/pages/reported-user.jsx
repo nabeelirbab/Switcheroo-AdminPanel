@@ -1,6 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 
-import { UserView } from 'src/sections/user/view';
+import { ReportedUserView } from 'src/sections/Reported-user/view';
+
 
 // ----------------------------------------------------------------------
 
@@ -8,10 +9,10 @@ export default function UserPage() {
   return (
     <>
       <Helmet>
-        <title> Reported User </title>
+        <title> Reported Users </title>
       </Helmet>
 
-      <UserView />
+      <ReportedUserView />
     </>
   );
 }

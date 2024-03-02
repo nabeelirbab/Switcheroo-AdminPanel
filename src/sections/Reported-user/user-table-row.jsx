@@ -5,6 +5,7 @@ import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import Popover from '@mui/material/Popover';
 import TableRow from '@mui/material/TableRow';
+// import Checkbox from '@mui/material/Checkbox';
 import MenuItem from '@mui/material/MenuItem';
 import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
@@ -15,15 +16,12 @@ import Iconify from 'src/components/iconify';
 
 export default function UserTableRow({
   selected,
-  name,
-  email,
-  totalitems,
-  matchedItems,
-  avatarUrl,
-  status,
+  targetUser,
+  createdUser,
+  title,
+  description,
   handleClick,
   handleDelete,
-  lastname,
 }) {
   const [open, setOpen] = useState(null);
 
@@ -38,25 +36,27 @@ export default function UserTableRow({
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
-
-        <TableCell component="th" scope="row" >
+        <TableCell component="th" scope="row">
           <Stack direction="row" alignItems="center" spacing={2}>
-            <Avatar alt={name} src={avatarUrl} />
+            <Avatar alt={targetUser.firstName} src={targetUser.avatarUrl} />
             <Typography variant="subtitle2" noWrap>
-              {name} {lastname}
+              {targetUser.firstName} {targetUser.lastName}
             </Typography>
           </Stack>
         </TableCell>
 
-        <TableCell>{email}</TableCell>
+        <TableCell>{title}</TableCell>
 
-        <TableCell>{totalitems}</TableCell>
+        <TableCell>{targetUser.email}</TableCell>
 
-        <TableCell align="center">{matchedItems}</TableCell>
+        <TableCell >{description}</TableCell>
 
         <TableCell>
-          <Label color={(status === 'banned' && 'error') || 'success'}>Active</Label>
+          <Label align="center" >{createdUser.firstName} {createdUser.lastName}</Label>
         </TableCell>
+
+        
+
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
@@ -75,10 +75,6 @@ export default function UserTableRow({
           sx: { width: 140 },
         }}
       >
-        <MenuItem onClick={handleCloseMenu}>
-          <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
-          Edit
-        </MenuItem>
 
         <MenuItem
           onClick={() => {
@@ -96,14 +92,20 @@ export default function UserTableRow({
 }
 
 UserTableRow.propTypes = {
-  avatarUrl: PropTypes.any,
-  email: PropTypes.any,
+  targetUser: PropTypes.shape({
+    avatarUrl: PropTypes.string,
+    email: PropTypes.string,
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
+  }),
+  createdUser: PropTypes.shape({
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
+    email: PropTypes.string,
+  }),
   handleClick: PropTypes.func,
   handleDelete: PropTypes.func,
-  matchedItems: PropTypes.any,
-  name: PropTypes.any,
-  lastname:PropTypes.any,
-  totalitems: PropTypes.any,
-  selected: PropTypes.any,
-  status: PropTypes.string,
+  title: PropTypes.string,
+  description: PropTypes.string,
+  selected: PropTypes.bool,
 };

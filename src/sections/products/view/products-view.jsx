@@ -56,9 +56,18 @@ export default function ProductsView() {
   if (error) return <p>Error: {error.message}</p>;
   console.log(data.restrictedItems, '.....Restricted Products....');
 
-  const restrictedProducts = data.restrictedItems;
+  const restrictedProducts = data.restrictedItems || []; 
 
-  
+  if (restrictedProducts.length === 0) {
+    return (
+      <Container>
+        <Typography variant="h4" sx={{ mb: 5 }}>
+          Reported Items
+        </Typography>
+        <Typography variant="body1">No restricted Items available.</Typography>
+      </Container>
+    );
+  }
 
   const handleDeleteItem = async (userId) => {
     try {

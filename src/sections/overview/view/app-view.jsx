@@ -28,7 +28,38 @@ const CATEGORIES_ITEM_COUNT = gql`
   }
 `;
 
+const GET_ALL_USERS = gql`
+  query getAllUsers {
+    users(limit: 100) {
+      totalCount
+    }
+  }
+`;
+
+const RESTRICTED_PRODUCTS = gql`
+  query RestrictedItems {
+    restrictedItems {
+      id
+    }
+  }
+`;
+
+const GET_REPORTED_USERS = gql`
+  query RestrictedUsers {
+    restrictedUsers {
+      id
+    }
+  }
+`;
+
 export default function AppView() {
+  const { data: userdata, loading: userLoading, error: userError } = useQuery(GET_ALL_USERS);
+  const { data: restricteduserdata, loading: restrictedUserLoading, error: restrictedUserError } = useQuery(GET_REPORTED_USERS);
+  const {
+    data: ProductsCountdata,
+    loading: productsLoading,
+    error: productsError,
+  } = useQuery(RESTRICTED_PRODUCTS);
   const { loading, error, data } = useQuery(GENDER_COUNT);
   const {
     loading: itemloading,
@@ -36,14 +67,15 @@ export default function AppView() {
     data: categoriesItemData,
   } = useQuery(CATEGORIES_ITEM_COUNT);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
-  console.log(data, '.....GENDER COUNT....');
+  if (loading || userLoading || productsLoading || itemloading || restrictedUserLoading) return <p>Loading...</p>;
+  if (error || userError || productsError || itemerror ||restrictedUserError)
+    return <p>Error: {error?.message || userError?.message || itemerror?.message || productsError?.message || restrictedUserError?.message}</p>;
 
-  if (itemloading) return <p>Loading...</p>;
-  if (itemerror) return <p>Error: {error.message}</p>;
-  console.log(categoriesItemData, '.....ITEMS CATEGORIES....');
-
+  const Count = userdata.users.totalCount;
+  const ProductsCount = ProductsCountdata?.restrictedItems?.length;
+  const RestricteduserCount = restricteduserdata?.restrictedUsers?.length;
+  
+console.log(data.usersGenderCount)
   const genderData = data.usersGenderCount.map((item) => ({
     label: item.key,
     value: item.value,
@@ -64,7 +96,7 @@ export default function AppView() {
         <Grid xs={12} sm={6} md={3}>
           <AppWidgetSummary
             title="Total Users"
-            total={1357}
+            total={Count}
             color="info"
             icon={<img alt="icon" src="/assets/icons/glass/ic_glass_users.png" />}
           />
@@ -72,7 +104,7 @@ export default function AppView() {
 
         <Grid xs={12} sm={6} md={3}>
           <AppWidgetSummary
-            title="Total Products"
+            title="Total Items"
             total={17235}
             color="warning"
             icon={<img alt="icon" src="/assets/icons/glass/ic_glass_buy.png" />}
@@ -81,19 +113,19 @@ export default function AppView() {
 
         <Grid xs={12} sm={6} md={3}>
           <AppWidgetSummary
-            title="Reported Products"
-            total={234}
-            color="error"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_message.png" />}
+            title="Reported Users"
+            total={RestricteduserCount}
+            color="warning"
+            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_users.png" />}
           />
         </Grid>
 
         <Grid xs={12} sm={6} md={3}>
           <AppWidgetSummary
-            title="Matched Items"
-            total={714000}
-            color="success"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_bag.png" />}
+            title="Reported Items"
+            total={ProductsCount}
+            color="error"
+            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_message.png" />}
           />
         </Grid>
 
