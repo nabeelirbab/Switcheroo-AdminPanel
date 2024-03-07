@@ -51,10 +51,33 @@ const GET_REPORTED_USERS = gql`
     }
   }
 `;
+const TOTAL_ITEMS = gql`
+  query AllItemsInDatabase {
+    allItemsInDatabase(limit: 1000) {
+      totalCount
+      data {
+        askingPrice
+        description
+        id
+        mainImageUrl
+        title
+      }
+    }
+  }
+`;
 
 export default function AppView() {
   const { data: userdata, loading: userLoading, error: userError } = useQuery(GET_ALL_USERS);
-  const { data: restricteduserdata, loading: restrictedUserLoading, error: restrictedUserError } = useQuery(GET_REPORTED_USERS);
+  const {
+    data: totalitemsdata,
+    loading: totalitemsLoading,
+    error: totalitemsError,
+  } = useQuery(TOTAL_ITEMS);
+  const {
+    data: restricteduserdata,
+    loading: restrictedUserLoading,
+    error: restrictedUserError,
+  } = useQuery(GET_REPORTED_USERS);
   const {
     data: ProductsCountdata,
     loading: productsLoading,
@@ -67,15 +90,36 @@ export default function AppView() {
     data: categoriesItemData,
   } = useQuery(CATEGORIES_ITEM_COUNT);
 
-  if (loading || userLoading || productsLoading || itemloading || restrictedUserLoading) return <p>Loading...</p>;
-  if (error || userError || productsError || itemerror ||restrictedUserError)
-    return <p>Error: {error?.message || userError?.message || itemerror?.message || productsError?.message || restrictedUserError?.message}</p>;
+  if (
+    loading ||
+    userLoading ||
+    productsLoading ||
+    itemloading ||
+    restrictedUserLoading ||
+    totalitemsLoading
+  )
+    return <p>Loading...</p>;
+  if (error || userError || productsError || itemerror || restrictedUserError || totalitemsError)
+    return (
+      <p>
+        Error:{' '}
+        {error?.message ||
+          userError?.message ||
+          itemerror?.message ||
+          productsError?.message ||
+          restrictedUserError?.message ||
+          totalitemsError.message}
+      </p>
+    );
 
   const Count = userdata.users.totalCount;
   const ProductsCount = ProductsCountdata?.restrictedItems?.length;
   const RestricteduserCount = restricteduserdata?.restrictedUsers?.length;
-  
-console.log(data.usersGenderCount)
+  const TotalItemsCount = totalitemsdata.allItemsInDatabase.totalCount
+  console.log(TotalItemsCount,'.........')
+
+
+  console.log(data.usersGenderCount);
   const genderData = data.usersGenderCount.map((item) => ({
     label: item.key,
     value: item.value,
@@ -105,7 +149,7 @@ console.log(data.usersGenderCount)
         <Grid xs={12} sm={6} md={3}>
           <AppWidgetSummary
             title="Total Items"
-            total={17235}
+            total={TotalItemsCount}
             color="warning"
             icon={<img alt="icon" src="/assets/icons/glass/ic_glass_buy.png" />}
           />

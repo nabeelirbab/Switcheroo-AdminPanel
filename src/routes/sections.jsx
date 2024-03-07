@@ -8,6 +8,7 @@ export const UserPage = lazy(() => import('src/pages/user'));
 export const ReportedUserPage = lazy(() => import('src/pages/reported-user'));
 export const LoginPage = lazy(() => import('src/pages/login'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
+export const TotalItemsPage = lazy(() => import('src/pages/items'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
 // Define your routes configuration outside of the component
@@ -25,6 +26,7 @@ const routes = [
       { path: 'user', element: <UserPage /> },
       { path: 'reported-products', element: <ProductsPage /> },
       { path: 'reported-user', element: <ReportedUserPage /> },
+      { path: 'total-items', element: <TotalItemsPage /> },
     ],
   },
   {
