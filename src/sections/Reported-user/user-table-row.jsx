@@ -21,7 +21,7 @@ export default function UserTableRow({
   title,
   description,
   handleClick,
-  handleDelete,
+  handleDeleteUser,
 }) {
   const [open, setOpen] = useState(null);
 
@@ -31,6 +31,21 @@ export default function UserTableRow({
 
   const handleCloseMenu = () => {
     setOpen(null);
+  };
+
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDeleteUserss = async () => {
+    setIsDeleting(true);
+    const targetUserId = targetUser.id;
+    console.log('Deleting item with ID:', targetUserId);
+    try {
+      await handleDeleteUser(targetUserId);
+      setIsDeleting(false);
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -78,13 +93,14 @@ export default function UserTableRow({
 
         <MenuItem
           onClick={() => {
-            handleDelete();
-            handleCloseMenu();
+            handleDeleteUserss();
+            handleCloseMenu()
           }}
+          disabled={isDeleting}
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
-          Delete
+          {isDeleting ? 'Deleting...' : 'Delete'}
         </MenuItem>
       </Popover>
     </>
@@ -94,6 +110,7 @@ export default function UserTableRow({
 UserTableRow.propTypes = {
   targetUser: PropTypes.shape({
     avatarUrl: PropTypes.string,
+    id:PropTypes.number,
     email: PropTypes.string,
     firstName: PropTypes.string,
     lastName: PropTypes.string,
@@ -104,7 +121,7 @@ UserTableRow.propTypes = {
     email: PropTypes.string,
   }),
   handleClick: PropTypes.func,
-  handleDelete: PropTypes.func,
+  handleDeleteUser: PropTypes.func,
   title: PropTypes.string,
   description: PropTypes.string,
   selected: PropTypes.bool,

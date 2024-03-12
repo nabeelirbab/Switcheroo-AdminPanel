@@ -57,7 +57,7 @@ export default function UserPage() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [reportedUsers, setReportedUsers] = useState([]);
 
-  const { loading, error, data, refetch } = useQuery(GET_REPORTED_USERS);
+  const { loading, error, data } = useQuery(GET_REPORTED_USERS);
   const [deleteUser] = useMutation(DELETE_USER);
 
   useEffect(() => {
@@ -119,17 +119,35 @@ export default function UserPage() {
     setPage(0);
   };
 
+  // const handleDeleteUser = async (userId) => {
+  //   try {
+  //     await deleteUser({ variables: { userIds: [userId] } });
+  //     // Filter out the deleted user from reportedUsers
+  //     const updatedReportedUsers = reportedUsers.filter((user) => user.targetUser[0].id !== userId);
+  //     // Update the reportedUsers state with the updated array
+  //     setReportedUsers(updatedReportedUsers);
+  //     // Optionally, you can also refetch the data if needed
+  //     refetch();
+  //   } catch (err) {
+  //     console.error('Error deleting user:', err);
+  //   }
+  // };
   const handleDeleteUser = async (userId) => {
     try {
-      await deleteUser({ variables: { userIds: [userId] } });
-      // Filter out the deleted user from reportedUsers
-      const updatedReportedUsers = reportedUsers.filter((user) => user.targetUser[0].id !== userId);
-      // Update the reportedUsers state with the updated array
-      setReportedUsers(updatedReportedUsers);
-      // Optionally, you can also refetch the data if needed
-      refetch();
+      if (!userId) {
+        console.error('Error deleting item: ItemId is null or undefined');
+        return;
+      }
+
+      console.log('itemId passed to handleDeleteItem:', userId);
+      await deleteUser({
+        variables: {
+          userIds: [userId],
+        },
+        refetchQueries: [{ query: GET_REPORTED_USERS }],
+      });
     } catch (err) {
-      console.error('Error deleting user:', err);
+      console.error('Error deleting item:', err);
     }
   };
 
@@ -175,6 +193,7 @@ export default function UserPage() {
               />
               <TableBody>
                 {dataFiltered
+                  .filter((row) => row.targetUser.length > 0)
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => (
                     <UserTableRow
@@ -186,7 +205,7 @@ export default function UserPage() {
                       description={row.description}
                       selected={selected.indexOf(row.targetUser[0]?.id) !== -1}
                       handleClick={(event) => handleClick(event, row.targetUser[0].id)}
-                      handleDelete={() => handleDeleteUser(row.targetUser[0].id)}
+                      handleDeleteUser={() => handleDeleteUser(row.targetUser[0].id)}
                     />
                   ))}
 
@@ -204,7 +223,7 @@ export default function UserPage() {
         <TablePagination
           page={page}
           component="div"
-          count={reportedUsers.length}
+          count={dataFiltered.filter(user => user.targetUser.length > 0).length}
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}
           rowsPerPageOptions={rowsPerPageOptions}

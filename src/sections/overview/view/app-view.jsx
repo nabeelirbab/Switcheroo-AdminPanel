@@ -120,8 +120,6 @@ export default function AppView() {
     );
 
   const Count = userdata.users.totalCount;
-  const ProductsCC = ProductsCountdata?.restrictedItems?.length;
-  console.log(ProductsCC, 'Product count wothout empty item array');
 
   const ProductsCount = ProductsCountdata?.restrictedItems
     ? ProductsCountdata.restrictedItems.reduce((count, product) => {
@@ -132,9 +130,16 @@ export default function AppView() {
       }, 0)
     : 0;
 
-  const RestricteduserCount = restricteduserdata?.restrictedUsers?.length;
+  const RestrictedUsersCount = restricteduserdata?.restrictedUsers
+  ? restricteduserdata.restrictedUsers.reduce((count, product) => {
+      if (product.targetUser && product.targetUser.length > 0) {
+        return count + 1;
+      }
+      return count;
+    }, 0)
+  : 0;
+
   const TotalItemsCount = totalitemsdata.allItemsInDatabase.totalCount;
-  console.log(TotalItemsCount, '.........');
 
   console.log(data.usersGenderCount);
   const genderData = data.usersGenderCount.map((item) => ({
@@ -175,7 +180,7 @@ export default function AppView() {
         <Grid xs={12} sm={6} md={3}>
           <AppWidgetSummary
             title="Reported Users"
-            total={RestricteduserCount}
+            total={RestrictedUsersCount}
             color="warning"
             icon={<img alt="icon" src="/assets/icons/glass/ic_glass_users.png" />}
           />
