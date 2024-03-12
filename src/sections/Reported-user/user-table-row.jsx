@@ -38,21 +38,21 @@ export default function UserTableRow({
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
         <TableCell component="th" scope="row">
           <Stack direction="row" alignItems="center" spacing={2}>
-            <Avatar alt={targetUser.firstName} src={targetUser.avatarUrl} />
+            <Avatar alt={targetUser?.firstName} src={targetUser?.avatarUrl} />
             <Typography variant="subtitle2" noWrap>
-              {targetUser.firstName} {targetUser.lastName}
+              {targetUser?.firstName} {targetUser?.lastName}
             </Typography>
           </Stack>
         </TableCell>
 
         <TableCell>{title}</TableCell>
 
-        <TableCell>{targetUser.email}</TableCell>
+        <TableCell>{targetUser?.email}</TableCell>
 
         <TableCell >{description}</TableCell>
 
         <TableCell>
-          <Label align="center" >{createdUser.firstName} {createdUser.lastName}</Label>
+          <Label align="center" >{createdUser?.firstName} {createdUser?.lastName}</Label>
         </TableCell>
 
         

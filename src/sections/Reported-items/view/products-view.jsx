@@ -27,10 +27,11 @@ const TOTAL_ITEMS = gql`
 `;
 
 const DELETE_ITEM = gql`
-  mutation DeleteItem($userId: ID!) {
-    deleteUser(itemId: $itemId)
+  mutation DeleteItem($itemId: Uuid!) {
+    deleteItem(itemId: $itemId)
   }
 `;
+
 
 export default function ProductsView() {
   const [deleteItem] = useMutation(DELETE_ITEM);
@@ -40,30 +41,38 @@ export default function ProductsView() {
   if (itemerror) return <p>Error: {itemerror.message}</p>;
 
   const allItems = itemdata.allItemsInDatabase.data;
+  console.log(allItems,'....all items')
 
   if (allItems.length === 0) {
     return (
       <Container>
         <Typography variant="h4" sx={{ mb: 5 }}>
-          Reported Items
+          Total Items
         </Typography>
-        <Typography variant="body1">No restricted Items available.</Typography>
+        <Typography variant="body1">No Items available.</Typography>
       </Container>
     );
   }
 
-  const handleDeleteItem = async (userId) => {
+  const handleDeleteItem = async (itemId) => {
     try {
-      console.log('userId passed to handleDeleteUser:', userId);
+      if (!itemId) {
+        console.error('Error deleting item: ItemId is null or undefined');
+        return;
+      }
+  
+      console.log('itemId passed to handleDeleteItem:', itemId);
       await deleteItem({
         variables: {
-          userIds: userId,
+          itemId: String(itemId), 
         },
+        refetchQueries: [{ query: TOTAL_ITEMS }],
       });
     } catch (err) {
-      console.error('Error deleting user:', err);
+      console.error('Error deleting item:', err);
     }
   };
+  
 
   return (
     <Container>

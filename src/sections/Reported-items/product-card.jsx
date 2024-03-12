@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import Box from '@mui/material/Box';
@@ -8,9 +9,22 @@ import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
 
 import Label from 'src/components/label';
-// import { fCurrency } from 'src/utils/format-number';
 
-export default function ShopProductCard({ product }) {
+export default function ShopProductCard({ product, handleDeleteItem }) {
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = () => {
+    setIsDeleting(true);
+    console.log('Deleting item with ID:', product.id);
+    handleDeleteItem(product.id)
+      .then(() => {
+        setIsDeleting(false);
+      })
+      .catch(() => {
+        setIsDeleting(false);
+      });
+  };
+
   const renderImg = (
     <Box
       component="img"
@@ -27,21 +41,12 @@ export default function ShopProductCard({ product }) {
   );
 
   const renderPrice = (
-    <Typography variant="subtitle1">
-      <Typography
-        component="span"
-        variant="body1"
-        sx={{
-          color: 'text.disabled',
-          textDecoration: 'line-through',
-        }}
-      >
-        {product.priceSale && (product.priceSale)}
-      </Typography>
-      &nbsp;
-      {(product.askingPrice)} $ 
+    <Typography variant="subtitle1" sx={{ display: 'flex', alignItems: 'center' }}>
+      <Box sx={{ marginRight: '4px' }}>$</Box>
+      {product.askingPrice}
     </Typography>
   );
+  
 
   return (
     <Card>
@@ -51,13 +56,20 @@ export default function ShopProductCard({ product }) {
           {product.title}
         </Link>
         <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <Typography>{product.description}</Typography>
+          <Typography sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {product.description}
+          </Typography>
           {renderPrice}
         </Stack>
       </Stack>
       <TableCell>
-        <Label sx={{ cursor: 'pointer' }} color="error">
-          Delete
+        <Label
+          sx={{ cursor: 'pointer' }}
+          color="error"
+          onClick={handleDelete}
+          disabled={isDeleting}
+        >
+          {isDeleting ? 'Deleting...' : 'Delete'}
         </Label>
       </TableCell>
     </Card>
@@ -66,10 +78,12 @@ export default function ShopProductCard({ product }) {
 
 ShopProductCard.propTypes = {
   product: PropTypes.shape({
+    id: PropTypes.string,
     mainImageUrl: PropTypes.string,
     title: PropTypes.string,
     description: PropTypes.string,
     askingPrice: PropTypes.number,
     priceSale: PropTypes.number,
   }),
+  handleDeleteItem: PropTypes.func.isRequired,
 };

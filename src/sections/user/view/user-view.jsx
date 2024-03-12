@@ -49,7 +49,6 @@ const GET_ALL_USERS = gql`
   }
 `;
 
-
 const DELETE_USER = gql`
   mutation DeleteUser($userIds: [Uuid]!) {
     deleteUser(userIds: $userIds)
@@ -80,6 +79,10 @@ export default function UserPage() {
   console.log(data, '.........');
 
   const userss = data.users.data;
+
+  const rowsPerPageOptions = [5, 10, 25, userss && userss.length > 0 ? 'View All' : null].filter(
+    (option) => option !== null
+  );
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -120,9 +123,13 @@ export default function UserPage() {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event) => {
+  const handleChangeRowsPerPage = ({ target: { value } }) => {
     setPage(0);
-    setRowsPerPage(parseInt(event.target.value, 10));
+    if (value === 'View All') {
+      setRowsPerPage(userss.length);
+    } else {
+      setRowsPerPage(parseInt(value, 10));
+    }
   };
 
   const handleFilterByName = (event) => {
@@ -221,7 +228,7 @@ export default function UserPage() {
           count={userss.length}
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}
-          rowsPerPageOptions={[5, 10, 25]}
+          rowsPerPageOptions={rowsPerPageOptions}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Card>

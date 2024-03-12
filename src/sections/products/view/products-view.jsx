@@ -42,23 +42,24 @@ const RESTRICTED_PRODUCTS = gql`
 `;
 
 const DELETE_ITEM = gql`
-  mutation DeleteItem($userId: ID!) {
-    deleteUser(itemId: $itemId)
+  mutation DeleteItem($itemId: Uuid!) {
+    deleteItem(itemId: $itemId)
   }
 `;
 
-
 export default function ProductsView() {
-  const { loading, error, data, refetch } = useQuery(RESTRICTED_PRODUCTS);
+  const { loading, error, data } = useQuery(RESTRICTED_PRODUCTS);
   const [deleteItem] = useMutation(DELETE_ITEM);
-  
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
   console.log(data.restrictedItems, '.....Restricted Products....');
 
-  const restrictedProducts = data.restrictedItems || []; 
+  const restrictedProducts = data.restrictedItems || [];
 
-  if (restrictedProducts.length === 0) {
+  const hasRestrictedProducts = restrictedProducts.some(product => product.targetItem.length > 0);
+
+  if (!hasRestrictedProducts) {
     return (
       <Container>
         <Typography variant="h4" sx={{ mb: 5 }}>
@@ -69,17 +70,22 @@ export default function ProductsView() {
     );
   }
 
-  const handleDeleteItem = async (userId) => {
+  const handleDeleteItem = async (itemId) => {
     try {
-      console.log('userId passed to handleDeleteUser:', userId);
+      if (!itemId) {
+        console.error('Error deleting item: ItemId is null or undefined');
+        return;
+      }
+
+      console.log('itemId passed to handleDeleteItem:', itemId);
       await deleteItem({
         variables: {
-          userIds: userId,
+          itemId: String(itemId),
         },
+        refetchQueries: [{ query: RESTRICTED_PRODUCTS }],
       });
-      refetch();
     } catch (err) {
-      console.error('Error deleting user:', err);
+      console.error('Error deleting item:', err);
     }
   };
 
@@ -90,12 +96,15 @@ export default function ProductsView() {
       </Typography>
 
       <Grid container spacing={3}>
-        {restrictedProducts.map((product) => (
-          <Grid key={restrictedProducts.id} xs={12} sm={6} md={3}>
-            <ProductCard product={product} handleDeleteItem={handleDeleteItem} />
-          </Grid>
-        ))}
+        {restrictedProducts
+          .filter(product => product.targetItem.length > 0) 
+          .map((product) => (
+            <Grid key={product.id} xs={12} sm={6} md={3}>
+              <ProductCard product={product} handleDeleteItem={handleDeleteItem} />
+            </Grid>
+          ))}
       </Grid>
     </Container>
   );
 }
+

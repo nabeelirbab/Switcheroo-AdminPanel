@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import Box from '@mui/material/Box';
@@ -14,7 +15,22 @@ import Label from 'src/components/label';
 
 // ----------------------------------------------------------------------
 
-export default function ShopProductCard({ product }) {
+export default function ShopProductCard({ product,handleDeleteItem }) {
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = () => {
+    setIsDeleting(true);
+    const targetItemId = product.targetItem[0].id;
+    console.log('Deleting item with ID:', targetItemId);
+    handleDeleteItem(targetItemId) 
+      .then(() => {
+        setIsDeleting(false);
+      })
+      .catch(() => {
+        setIsDeleting(false);
+      });
+  };
+
   const renderImg = product.targetItem.map((item, index) => (
     <Box
       key={index}
@@ -71,8 +87,8 @@ export default function ShopProductCard({ product }) {
       </Stack>
 
       <TableCell>
-        <Label sx={{ cursor: 'pointer' }} color="error">
-          Delete
+        <Label sx={{ cursor: 'pointer' }} color="error" onClick={handleDelete} disabled={isDeleting}>
+          {isDeleting ? 'Deleting...' : 'Delete'}
         </Label>
       </TableCell>
     </Card>
@@ -81,4 +97,5 @@ export default function ShopProductCard({ product }) {
 
 ShopProductCard.propTypes = {
   product: PropTypes.object,
+  handleDeleteItem: PropTypes.func.isRequired,
 };

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { gql, useQuery, useMutation } from '@apollo/client';
 
 import Card from '@mui/material/Card';
@@ -26,6 +26,7 @@ const GET_REPORTED_USERS = gql`
       title
       description
       targetUser {
+        id
         avatarUrl
         email
         firstName
@@ -54,15 +55,25 @@ export default function UserPage() {
   const [orderBy, setOrderBy] = useState('name');
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [reportedUsers, setReportedUsers] = useState([]);
 
   const { loading, error, data, refetch } = useQuery(GET_REPORTED_USERS);
   const [deleteUser] = useMutation(DELETE_USER);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  useEffect(() => {
+    if (!loading && !error) {
+      setReportedUsers(data.restrictedUsers);
+    }
+  }, [loading, error, data]);
 
-  const reportedUsers = data.restrictedUsers;
-  console.log(reportedUsers,'Restricted Users.........!')
+  console.log(reportedUsers, 'Restricted UsERS');
+
+  const rowsPerPageOptions = [
+    5,
+    10,
+    25,
+    reportedUsers && reportedUsers.length > 0 ? 'View All' : null,
+  ].filter((option) => option !== null);
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -79,20 +90,13 @@ export default function UserPage() {
     }
   };
 
-  const handleClick = (event, email) => {
-    const selectedIndex = selected.indexOf(email);
+  const handleClick = (event, userId) => {
+    const selectedIndex = selected.indexOf(userId);
     let newSelected = [];
     if (selectedIndex === -1) {
-      newSelected = [...selected, email];
-    } else if (selectedIndex === 0) {
-      newSelected = selected.slice(1);
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = selected.slice(0, -1);
-    } else if (selectedIndex > 0) {
-      newSelected = [
-        ...selected.slice(0, selectedIndex),
-        ...selected.slice(selectedIndex + 1),
-      ];
+      newSelected = [...selected, userId];
+    } else {
+      newSelected = [...selected.slice(0, selectedIndex), ...selected.slice(selectedIndex + 1)];
     }
     setSelected(newSelected);
   };
@@ -101,9 +105,13 @@ export default function UserPage() {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
+  const handleChangeRowsPerPage = ({ target: { value } }) => {
     setPage(0);
+    if (value === 'View All') {
+      setRowsPerPage(reportedUsers.length);
+    } else {
+      setRowsPerPage(parseInt(value, 10));
+    }
   };
 
   const handleFilterByName = (event) => {
@@ -114,6 +122,11 @@ export default function UserPage() {
   const handleDeleteUser = async (userId) => {
     try {
       await deleteUser({ variables: { userIds: [userId] } });
+      // Filter out the deleted user from reportedUsers
+      const updatedReportedUsers = reportedUsers.filter((user) => user.targetUser[0].id !== userId);
+      // Update the reportedUsers state with the updated array
+      setReportedUsers(updatedReportedUsers);
+      // Optionally, you can also refetch the data if needed
       refetch();
     } catch (err) {
       console.error('Error deleting user:', err);
@@ -165,14 +178,15 @@ export default function UserPage() {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => (
                     <UserTableRow
-                      key={row.title}
+                      key={row.id}
+                      id={row.id}
                       targetUser={row.targetUser[0]}
                       createdUser={row.createdUser[0]}
                       title={row.title}
                       description={row.description}
-                      selected={selected.indexOf(row.targetUser[0].email) !== -1}
-                      handleClick={(event) => handleClick(event, row.targetUser[0].email)}
-                      handleDelete={() => handleDeleteUser(row.targetUser[0].email)}
+                      selected={selected.indexOf(row.targetUser[0]?.id) !== -1}
+                      handleClick={(event) => handleClick(event, row.targetUser[0].id)}
+                      handleDelete={() => handleDeleteUser(row.targetUser[0].id)}
                     />
                   ))}
 
@@ -193,7 +207,7 @@ export default function UserPage() {
           count={reportedUsers.length}
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}
-          rowsPerPageOptions={[5, 10, 25]}
+          rowsPerPageOptions={rowsPerPageOptions}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Card>

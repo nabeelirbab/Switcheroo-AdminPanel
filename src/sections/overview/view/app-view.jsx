@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography';
 
 import GenderCount from '../gender-count';
 import AppWidgetSummary from '../app-widget-summary';
+// import UserEngagementGraph from '../user-engagement';
 import CategoriesItemCount from '../categories-item-count';
 
 // ----------------------------------------------------------------------
@@ -40,6 +41,12 @@ const RESTRICTED_PRODUCTS = gql`
   query RestrictedItems {
     restrictedItems {
       id
+      targetItemId
+      targetUserId
+      targetItem {
+        askingPrice
+        cashOfferValue
+      }
     }
   }
 `;
@@ -113,11 +120,21 @@ export default function AppView() {
     );
 
   const Count = userdata.users.totalCount;
-  const ProductsCount = ProductsCountdata?.restrictedItems?.length;
-  const RestricteduserCount = restricteduserdata?.restrictedUsers?.length;
-  const TotalItemsCount = totalitemsdata.allItemsInDatabase.totalCount
-  console.log(TotalItemsCount,'.........')
+  const ProductsCC = ProductsCountdata?.restrictedItems?.length;
+  console.log(ProductsCC, 'Product count wothout empty item array');
 
+  const ProductsCount = ProductsCountdata?.restrictedItems
+    ? ProductsCountdata.restrictedItems.reduce((count, product) => {
+        if (product.targetItem && product.targetItem.length > 0) {
+          return count + 1;
+        }
+        return count;
+      }, 0)
+    : 0;
+
+  const RestricteduserCount = restricteduserdata?.restrictedUsers?.length;
+  const TotalItemsCount = totalitemsdata.allItemsInDatabase.totalCount;
+  console.log(TotalItemsCount, '.........');
 
   console.log(data.usersGenderCount);
   const genderData = data.usersGenderCount.map((item) => ({
@@ -191,6 +208,10 @@ export default function AppView() {
           />
         </Grid>
       </Grid>
+
+      {/* <Grid xs={6} sm={6} md={3}>
+        <UserEngagementGraph chartData={chartData} />
+      </Grid> */}
     </Container>
   );
 }
