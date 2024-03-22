@@ -1,0 +1,33 @@
+import { gql } from '@apollo/client';
+
+export const NOTIFICATIONS = gql`
+  query Notifications {
+    notifications {
+      description
+      id
+      title
+    }
+  }
+`;
+
+export const CREATE_CUSTOM_NOTIFICATION = gql`
+  mutation createCusotmNotification(
+    $title: String!
+    $description: String!
+    $genderFilter: String!
+    $itemFilter: String!
+  ) {
+    createCusotmNotification(
+      filters: { genderFilter: $genderFilter, itemFilter: $itemFilter },
+      notification: { title: $title, description: $description }
+    ) {
+      createdAt
+      createdByUserId
+      description
+      id
+      title
+      updatedAt
+      updatedByUserId
+    }
+  }
+`;

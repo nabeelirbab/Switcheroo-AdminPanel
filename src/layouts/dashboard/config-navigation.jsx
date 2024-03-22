@@ -20,17 +20,22 @@ const navConfig = [
   {
     title: 'reported Items',
     path: '/reported-products',  
-    icon: icon('ic_cart'),
+    icon: icon('ic_reporteditem'),
   },
   {
     title: 'reported user',
     path: '/reported-user',
-    icon: icon('ic_user'),
+    icon: icon('ic_reporteduser'),
   },
   {
     title: 'Total Items',
     path: '/total-items',
     icon: icon('ic_cart'),
+  },
+  {
+    title: 'Notifications',
+    path: '/notifications',
+    icon: icon('ic_notification'),
   },
 ];
 
