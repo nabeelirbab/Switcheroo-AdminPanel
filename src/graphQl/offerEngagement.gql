@@ -1,0 +1,28 @@
+import { gql } from '@apollo/client';
+
+export const OFFER_ENGAGEMENTS = gql`
+  query OfferEngagement {
+    offerEngagement {
+      countByType {
+        acceptedCashOffers
+        cashOffers
+        matchedOffers
+        unMatchedOffers
+      }
+      dailyTrend {
+        count
+        date
+      }
+      monthlyTrend {
+        count
+        month
+        year
+      }
+      weeklyTrend {
+        count
+        week
+        year
+      }
+    }
+  }
+`;

@@ -29,18 +29,12 @@ const GET_ALL_USERS = gql`
     users(limit: 100) {
       data {
         id
-        username
         firstName
         lastName
         email
-        dateOfBirth
-        distance
         itemCount
         matchedItemCount
-        latitude
-        longitude
         gender
-        blurb
         avatarUrl
       }
       totalCount

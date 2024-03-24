@@ -1,0 +1,15 @@
+import { gql } from '@apollo/client';
+
+export const RESTRICTED_PRODUCTS = gql`
+  query RestrictedItems {
+    restrictedItems {
+      id
+      targetItemId
+      targetUserId
+      targetItem {
+        askingPrice
+        cashOfferValue
+      }
+    }
+  }
+`;

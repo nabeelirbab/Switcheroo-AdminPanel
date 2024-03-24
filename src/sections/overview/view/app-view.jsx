@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { gql, useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import {
   Line,
   XAxis,
@@ -20,139 +20,18 @@ import CircularProgress from '@mui/material/CircularProgress';
 import GenderCount from '../gender-count';
 import AppWidgetSummary from '../app-widget-summary';
 import CategoriesItemCount from '../categories-item-count';
+import { GET_ALL_USERS } from '../../../graphQl/getAllUsers.gql';
+import { GENDER_COUNT } from '../../../graphQl/usersGenderCount.gql';
+import { TOTAL_ITEMS } from '../../../graphQl/AllItemInDatabase.gql';
+import { ITEM_ENGAGEMENTS } from '../../../graphQl/ItemEngagement.gql';
+import { USER_ENGAGEMENTS } from '../../../graphQl/UserEngagement.gql';
+import { OFFER_ENGAGEMENTS } from '../../../graphQl/offerEngagement.gql';
+import { GET_REPORTED_USERS } from '../../../graphQl/RestrictedUsers.gql';
+import { RESTRICTED_PRODUCTS } from '../../../graphQl/RestrictedItem.gql';
+import { CATEGORIES_ITEM_COUNT } from '../../../graphQl/CategoriesItemCount.gql';
 
 // ----------------------------------------------------------------------
 
-const GENDER_COUNT = gql`
-  query usersGenderCount {
-    usersGenderCount {
-      key
-      value
-    }
-  }
-`;
-
-const CATEGORIES_ITEM_COUNT = gql`
-  query CategoriesItemCount {
-    categoriesItemCount {
-      key
-      value
-    }
-  }
-`;
-
-const GET_ALL_USERS = gql`
-  query getAllUsers {
-    users(limit: 100) {
-      totalCount
-    }
-  }
-`;
-
-const RESTRICTED_PRODUCTS = gql`
-  query RestrictedItems {
-    restrictedItems {
-      id
-      targetItemId
-      targetUserId
-      targetItem {
-        askingPrice
-        cashOfferValue
-      }
-    }
-  }
-`;
-
-const GET_REPORTED_USERS = gql`
-  query RestrictedUsers {
-    restrictedUsers {
-      id
-    }
-  }
-`;
-const TOTAL_ITEMS = gql`
-  query AllItemsInDatabase {
-    allItemsInDatabase(limit: 1000) {
-      totalCount
-      data {
-        askingPrice
-        description
-        id
-        mainImageUrl
-        title
-      }
-    }
-  }
-`;
-
-const USER_ENGAGEMENTS = gql`
-  query UserEngagement {
-    userEngagement {
-      dailyRegistrationTrend {
-        count
-        date
-      }
-      monthlyRegistrationTrend {
-        count
-        month
-        year
-      }
-      weeklyRegistrationTrend {
-        count
-        week
-        year
-      }
-    }
-  }
-`;
-
-const ITEM_ENGAGEMENTS = gql`
-  query ItemEngagement {
-    itemEngagement {
-      dailyRegistrationTrend {
-        count
-        date
-      }
-      monthlyRegistrationTrend {
-        count
-        month
-        year
-      }
-      weeklyRegistrationTrend {
-        count
-        week
-        year
-      }
-    }
-  }
-`;
-
-const OFFER_ENGAGEMENTS = gql`
-  query OfferEngagement {
-    offerEngagement {
-      countByType {
-        acceptedCashOffers
-        cashOffers
-        matchedOffers
-        unMatchedOffers
-      }
-      dailyTrend {
-        count
-        date
-      }
-      monthlyTrend {
-        count
-        month
-        year
-      }
-      weeklyTrend {
-        count
-        week
-        year
-      }
-    }
-  }
-`;
 
 export default function AppView() {
   const [selectedOption, setSelectedOption] = useState('daily');
@@ -270,7 +149,6 @@ export default function AppView() {
 
   const TotalItemsCount = totalitemsdata.allItemsInDatabase.totalCount;
 
-  console.log(data.usersGenderCount);
   const genderData = data.usersGenderCount.map((item) => ({
     label: item.key,
     value: item.value,
@@ -284,7 +162,6 @@ export default function AppView() {
   const userEngagement = userEngagementData;
   const itemEngagement = itemEngagementData;
   const offerEngagement = offerEngagementData;
-  console.log(offerEngagement, 'offer engagement');
 
   // User Engagement data for daily, monthly, and weekly engagement
   const dailyData = userEngagement.userEngagement.dailyRegistrationTrend.map((item) => ({

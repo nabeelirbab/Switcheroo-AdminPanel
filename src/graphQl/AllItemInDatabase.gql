@@ -1,0 +1,16 @@
+import { gql } from '@apollo/client';
+
+export const TOTAL_ITEMS = gql`
+  query AllItemsInDatabase {
+    allItemsInDatabase(limit: 1000) {
+      totalCount
+      data {
+        askingPrice
+        description
+        id
+        mainImageUrl
+        title
+      }
+    }
+  }
+`;

@@ -1,0 +1,10 @@
+import { gql } from '@apollo/client';
+
+export const GENDER_COUNT = gql`
+  query usersGenderCount {
+    usersGenderCount {
+      key
+      value
+    }
+  }
+`;

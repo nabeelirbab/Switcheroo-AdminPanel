@@ -1,0 +1,22 @@
+import { gql } from '@apollo/client';
+
+export const ITEM_ENGAGEMENTS = gql`
+  query ItemEngagement {
+    itemEngagement {
+      dailyRegistrationTrend {
+        count
+        date
+      }
+      monthlyRegistrationTrend {
+        count
+        month
+        year
+      }
+      weeklyRegistrationTrend {
+        count
+        week
+        year
+      }
+    }
+  }
+`;
