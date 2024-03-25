@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import { gql, useQuery, useMutation } from '@apollo/client';
 
+import Fade from '@mui/material/Fade';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
+import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
 // import { products } from 'src/_mock/products';
@@ -9,7 +12,6 @@ import Typography from '@mui/material/Typography';
 import ProductCard from '../product-card';
 
 // ----------------------------------------------------------------------
-
 
 const TOTAL_ITEMS = gql`
   query AllItemsInDatabase {
@@ -32,16 +34,15 @@ const DELETE_ITEM = gql`
   }
 `;
 
-
 export default function ProductsView() {
+  const [searchQuery, setSearchQuery] = useState('');
   const [deleteItem] = useMutation(DELETE_ITEM);
   const { loading: itemloading, error: itemerror, data: itemdata } = useQuery(TOTAL_ITEMS);
-  
+
   if (itemloading) return <p>Loading...</p>;
   if (itemerror) return <p>Error: {itemerror.message}</p>;
 
   const allItems = itemdata.allItemsInDatabase.data;
-  console.log(allItems,'....all items')
 
   if (allItems.length === 0) {
     return (
@@ -60,11 +61,11 @@ export default function ProductsView() {
         console.error('Error deleting item: ItemId is null or undefined');
         return;
       }
-  
+
       console.log('itemId passed to handleDeleteItem:', itemId);
       await deleteItem({
         variables: {
-          itemId: String(itemId), 
+          itemId: String(itemId),
         },
         refetchQueries: [{ query: TOTAL_ITEMS }],
       });
@@ -72,7 +73,10 @@ export default function ProductsView() {
       console.error('Error deleting item:', err);
     }
   };
-  
+
+  const filteredItems = allItems.filter((item) =>
+    item.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <Container>
@@ -80,11 +84,22 @@ export default function ProductsView() {
         Total Items
       </Typography>
 
+      <TextField
+        label="Search by Title"
+        variant="outlined"
+        fullWidth
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        sx={{ mb: 3 }}
+      />
+
       <Grid container spacing={3}>
-        {allItems.map((product) => (
-          <Grid key={allItems.id} xs={12} sm={6} md={3}>
-            <ProductCard product={product} handleDeleteItem={handleDeleteItem} />
-          </Grid>
+        {filteredItems.map((product) => (
+          <Fade in key={product.id}>
+            <Grid item xs={12} sm={6} md={3}>
+              <ProductCard product={product} handleDeleteItem={handleDeleteItem} />
+            </Grid>
+          </Fade>
         ))}
       </Grid>
     </Container>

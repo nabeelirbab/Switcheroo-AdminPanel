@@ -47,9 +47,14 @@ export function applyFilter({ inputData, comparator, filterName }) {
   inputData = stabilizedThis.map((el) => el[0]);
 
   if (filterName) {
-    inputData = inputData.filter(
-      (user) => user.targetUser[0].firstName.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
-    );
+    inputData = inputData.filter(user => {
+      if (user) {
+        const filterLower = filterName.toLowerCase();
+        return (user.firstName && user.firstName.toLowerCase().includes(filterLower)) ||
+               (user.lastName && user.lastName.toLowerCase().includes(filterLower));
+      }
+      return false;
+    });
   }
 
   return inputData;

@@ -5,25 +5,39 @@ import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
+import Popover from '@mui/material/Popover';
 import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
 
 import Label from 'src/components/label';
 
 export default function ShopProductCard({ product, handleDeleteItem }) {
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
 
   const handleDelete = () => {
-    setIsDeleting(true);
-    console.log('Deleting item with ID:', product.id);
     handleDeleteItem(product.id)
       .then(() => {
-        setIsDeleting(false);
+        setAnchorEl(null);
       })
       .catch(() => {
-        setIsDeleting(false);
+        setAnchorEl(null);
       });
   };
+
+  const handleClickDelete = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClosePopover = () => {
+    setAnchorEl(null);
+  };
+
+  const handleNoButtonClick = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
 
   const renderImg = (
     <Box
@@ -46,7 +60,6 @@ export default function ShopProductCard({ product, handleDeleteItem }) {
       {product.askingPrice}
     </Typography>
   );
-  
 
   return (
     <Card>
@@ -63,15 +76,33 @@ export default function ShopProductCard({ product, handleDeleteItem }) {
         </Stack>
       </Stack>
       <TableCell>
-        <Label
-          sx={{ cursor: 'pointer' }}
-          color="error"
-          onClick={handleDelete}
-          disabled={isDeleting}
-        >
-          {isDeleting ? 'Deleting...' : 'Delete'}
+        <Label sx={{ cursor: 'pointer' }} color="error" onClick={handleClickDelete}>
+          Delete
         </Label>
       </TableCell>
+      <Popover
+        open={open}
+        onClose={handleClosePopover}
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+      >
+        <Stack p={2} alignItems="center">
+          <Typography sx={{ mb: '20px' }} variant="body1">
+            Are you sure you want to delete?
+          </Typography>
+          <Stack direction="row" spacing={2}>
+            <Button variant="contained" onClick={handleDelete} color="error">
+              Yes
+            </Button>
+            <Button variant="contained" onClick={handleNoButtonClick}>
+              No
+            </Button>
+          </Stack>
+        </Stack>
+      </Popover>
     </Card>
   );
 }

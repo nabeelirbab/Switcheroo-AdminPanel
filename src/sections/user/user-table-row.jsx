@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
 import Popover from '@mui/material/Popover';
 import TableRow from '@mui/material/TableRow';
 import MenuItem from '@mui/material/MenuItem';
@@ -21,25 +22,38 @@ export default function UserTableRow({
   matchedItems,
   avatarUrl,
   status,
-  handleClick,
   handleDelete,
   lastname,
 }) {
-  const [open, setOpen] = useState(null);
+  const [openMenu, setOpenMenu] = useState(null);
+  const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
 
   const handleOpenMenu = (event) => {
-    setOpen(event.currentTarget);
+    setOpenMenu(event.currentTarget);
   };
 
   const handleCloseMenu = () => {
-    setOpen(null);
+    setOpenMenu(null);
+  };
+
+  const handleConfirmDelete = () => {
+    setOpenDeleteConfirm(false);
+    handleDelete();
+  };
+
+  const handleOpenDeleteConfirm = () => {
+    setOpenDeleteConfirm(true);
+    handleCloseMenu();
+  };
+
+  const handleCloseDeleteConfirm = () => {
+    setOpenDeleteConfirm(false);
   };
 
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
-
-        <TableCell component="th" scope="row" >
+        <TableCell component="th" scope="row">
           <Stack direction="row" alignItems="center" spacing={2}>
             <Avatar alt={name} src={avatarUrl} />
             <Typography variant="subtitle2" noWrap>
@@ -66,30 +80,40 @@ export default function UserTableRow({
       </TableRow>
 
       <Popover
-        open={!!open}
-        anchorEl={open}
+        open={!!openMenu}
+        anchorEl={openMenu}
         onClose={handleCloseMenu}
-        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        anchorOrigin={{ vertical: 'center', horizontal: 'center' }}
+        transformOrigin={{ vertical: 'center', horizontal: 'center' }}
         PaperProps={{
           sx: { width: 140 },
         }}
       >
-        <MenuItem onClick={handleCloseMenu}>
-          <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
-          Edit
-        </MenuItem>
-
-        <MenuItem
-          onClick={() => {
-            handleDelete();
-            handleCloseMenu();
-          }}
-          sx={{ color: 'error.main' }}
-        >
+        <MenuItem onClick={handleOpenDeleteConfirm} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Delete
         </MenuItem>
+      </Popover>
+
+      <Popover
+        open={openDeleteConfirm}
+        onClose={handleCloseDeleteConfirm}
+        anchorOrigin={{ vertical: 'center', horizontal: 'center' }}
+        transformOrigin={{ vertical: 'center', horizontal: 'center' }}
+      >
+        <Stack p={2} alignItems="center">
+          <Typography sx={{ mb: '20px' }} variant="body1">
+            Are you sure you want to delete?
+          </Typography>
+          <Stack direction="row" spacing={2}>
+            <Button variant="contained" onClick={handleConfirmDelete} color="error">
+              Yes
+            </Button>
+            <Button variant="contained" onClick={handleCloseDeleteConfirm}>
+              No
+            </Button>
+          </Stack>
+        </Stack>
       </Popover>
     </>
   );
@@ -98,11 +122,10 @@ export default function UserTableRow({
 UserTableRow.propTypes = {
   avatarUrl: PropTypes.any,
   email: PropTypes.any,
-  handleClick: PropTypes.func,
   handleDelete: PropTypes.func,
   matchedItems: PropTypes.any,
   name: PropTypes.any,
-  lastname:PropTypes.any,
+  lastname: PropTypes.any,
   totalitems: PropTypes.any,
   selected: PropTypes.any,
   status: PropTypes.string,
