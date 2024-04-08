@@ -223,7 +223,7 @@ export default function UserPage() {
         <TablePagination
           page={page}
           component="div"
-          count={dataFiltered.filter(user => user.targetUser.length > 0).length}
+          count={dataFiltered.filter((user) => user.targetUser.length > 0).length}
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}
           rowsPerPageOptions={rowsPerPageOptions}

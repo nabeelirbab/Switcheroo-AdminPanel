@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
@@ -24,11 +25,21 @@ export default function UserTableRow({
   status,
   handleDelete,
   lastname,
+  users,
 }) {
   const [openMenu, setOpenMenu] = useState(null);
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
+  const [openProfile, setOpenProfile] = useState(false);
+  const navigateTo = useNavigate();
+
+  const handleClick = (event) => {
+    if (!openMenu && !openDeleteConfirm) {
+      setOpenProfile(true);
+    }
+  };
 
   const handleOpenMenu = (event) => {
+    event.stopPropagation(); 
     setOpenMenu(event.currentTarget);
   };
 
@@ -50,9 +61,20 @@ export default function UserTableRow({
     setOpenDeleteConfirm(false);
   };
 
+  if (openProfile) {
+    navigateTo('/user-profile');
+  }
+
   return (
     <>
-      <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
+      <TableRow
+        hover
+        onClick={handleClick}
+        tabIndex={-1}
+        style={{ cursor: 'pointer' }}
+        role="checkbox"
+        selected={selected}
+      >
         <TableCell component="th" scope="row">
           <Stack direction="row" alignItems="center" spacing={2}>
             <Avatar alt={name} src={avatarUrl} />
@@ -129,4 +151,5 @@ UserTableRow.propTypes = {
   totalitems: PropTypes.any,
   selected: PropTypes.any,
   status: PropTypes.string,
+  users: PropTypes.object.isRequired,
 };

@@ -11,8 +11,8 @@ export const ProductsPage = lazy(() => import('src/pages/products'));
 export const TotalItemsPage = lazy(() => import('src/pages/items'));
 export const NotificationsPage = lazy(() => import('src/pages/notifications'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
+export const UserProfile = lazy(() => import('src/pages/user-profile'));
 
-// Define your routes configuration outside of the component
 const routes = [
   {
     element: (
@@ -23,12 +23,13 @@ const routes = [
       </DashboardLayout>
     ),
     children: [
-      { path:"dashboard" ,element: <IndexPage /> },
+      { path: "dashboard", element: <IndexPage /> },
       { path: 'user', element: <UserPage /> },
       { path: 'reported-products', element: <ProductsPage /> },
       { path: 'reported-user', element: <ReportedUserPage /> },
       { path: 'total-items', element: <TotalItemsPage /> },
       { path: 'notifications', element: <NotificationsPage /> },
+      { path: 'user-profile', element: <UserProfile /> },
     ],
   },
   {
@@ -46,11 +47,13 @@ const routes = [
 ];
 
 export default function Router() {
-  // Always call useRoutes unconditionally
+  // const { isAuthenticated } = useAuth(); // Get authentication state from AuthContext
   const routingConfig = useRoutes(routes);
 
-  // Conditionally render redirection if the pathname matches '/'
+ 
+  // Check authentication before rendering routes
   if (window.location.pathname === '/') {
+    // If user is not authenticated, redirect to login page
     return <Navigate to="/login" replace />;
   }
 

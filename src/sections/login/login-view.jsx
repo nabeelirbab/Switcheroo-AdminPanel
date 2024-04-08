@@ -1,7 +1,7 @@
 import { useState } from 'react';
+import { useMutation } from '@apollo/client';
 
 import Box from '@mui/material/Box';
-// import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
@@ -18,25 +18,30 @@ import { bgGradient } from 'src/theme/css';
 import Logo from 'src/components/logo';
 import Iconify from 'src/components/iconify';
 
-// ----------------------------------------------------------------------
+import { SIGN_IN_MUTATION } from '../../graphQl/sigIn.gql';
 
 export default function LoginView() {
   const theme = useTheme();
-
   const router = useRouter();
-
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleClick = () => {
-    // Check if email and password match
-    if (email === 'Admin@switcherooapp.com' && password === 'Admin@1234') {
-      // If match, proceed with navigation
+  const [signInMutation, { loading, error: SignInError }] = useMutation(SIGN_IN_MUTATION);
+
+  const handleClick = async () => {
+    try {
+      const { data } = await signInMutation({
+        variables: {
+          email,
+          password,
+        },
+      });
+      console.log('Sign-in successful:', data);
       router.push('/dashboard');
-    } else {
-      // If not match, show error
+    } catch (err) {
+      console.error('Sign-in error:', err);
       setError('Invalid email or password');
     }
   };
@@ -67,7 +72,9 @@ export default function LoginView() {
             maxWidth: 420,
           }}
         >
-          <Typography variant="h4" textAlign="center" marginBottom={10} >Sign in to Switcheroo</Typography>
+          <Typography variant="h4" textAlign="center" marginBottom={10}>
+            Sign in to Switcheroo
+          </Typography>
 
           <Stack spacing={3}>
             <TextField
@@ -101,12 +108,6 @@ export default function LoginView() {
             </Typography>
           )}
 
-          <Stack direction="row" alignItems="center" justifyContent="flex-end" sx={{ my: 3 }}>
-            {/* <Link variant="subtitle2" underline="hover">
-              Forgot password?
-            </Link> */}
-          </Stack>
-
           <LoadingButton
             fullWidth
             size="large"
@@ -115,8 +116,14 @@ export default function LoginView() {
             color="inherit"
             onClick={handleClick}
           >
-            Login
+            {loading ? 'Logging in...' : 'Login'}
           </LoadingButton>
+
+          {SignInError && (
+            <Typography variant="body2" color="error" mt={2} textAlign="center">
+              {SignInError.message}
+            </Typography>
+          )}
         </Card>
       </Stack>
     </Box>

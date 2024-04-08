@@ -32,7 +32,6 @@ import { CATEGORIES_ITEM_COUNT } from '../../../graphQl/CategoriesItemCount.gql'
 
 // ----------------------------------------------------------------------
 
-
 export default function AppView() {
   const [selectedOption, setSelectedOption] = useState('daily');
   const [selectedOptionItem, setSelectedOptionItem] = useState('daily');
@@ -111,7 +110,19 @@ export default function AppView() {
     userEngagementerror ||
     itemEngagementerror ||
     offerEngagementerror
-  )
+  ) {
+    console.log(
+      'Error:',
+      error?.message ||
+        userError?.message ||
+        itemerror?.message ||
+        productsError?.message ||
+        restrictedUserError?.message ||
+        totalitemsError?.message ||
+        userEngagementerror?.message ||
+        itemEngagementerror?.message ||
+        offerEngagementerror?.message
+    );
     return (
       <p>
         Error:{' '}
@@ -126,9 +137,11 @@ export default function AppView() {
           offerEngagementerror?.message}
       </p>
     );
-
+  }
   const Count = userdata.users.totalCount;
+  console.log(error, 'error');
 
+  console.log(ProductsCountdata, 'Products Count before filter');
   const ProductsCount = ProductsCountdata?.restrictedItems
     ? ProductsCountdata.restrictedItems.reduce((count, product) => {
         if (product.targetItem && product.targetItem.length > 0) {
@@ -138,6 +151,8 @@ export default function AppView() {
       }, 0)
     : 0;
 
+  console.log(restricteduserdata, 'restricted user before filter');
+  // const RestrictedUsersCount = restricteduserdata?.restrictedUsers.length;
   const RestrictedUsersCount = restricteduserdata?.restrictedUsers
     ? restricteduserdata.restrictedUsers.reduce((count, product) => {
         if (product.targetUser && product.targetUser.length > 0) {
@@ -160,55 +175,66 @@ export default function AppView() {
   }));
 
   const userEngagement = userEngagementData;
+  console.log(userEngagement, '..');
   const itemEngagement = itemEngagementData;
   const offerEngagement = offerEngagementData;
 
   // User Engagement data for daily, monthly, and weekly engagement
-  const dailyData = userEngagement.userEngagement.dailyRegistrationTrend.map((item) => ({
+  const dailyData = userEngagement.userEngagement.dailyRegistrationTrend.slice(-10).map((item) => ({
     date: item.date.split('T')[0],
     count: item.count,
   }));
 
-  const monthlyData = userEngagement.userEngagement.monthlyRegistrationTrend.map((item) => ({
-    label: `${item.month}/${item.year}`,
-    count: item.count,
-  }));
+  const monthlyData = userEngagement.userEngagement.monthlyRegistrationTrend
+    .slice(-12)
+    .map((item) => ({
+      label: `${item.month}/${item.year}`,
+      count: item.count,
+    }));
 
-  const weeklyData = userEngagement.userEngagement.weeklyRegistrationTrend.map((item) => ({
-    label: `${item.week} week/${item.year}`,
-    count: item.count,
-  }));
+  const weeklyData = userEngagement.userEngagement.weeklyRegistrationTrend
+    .slice(-12)
+    .map((item) => ({
+      label: `${item.week} week/${item.year}`,
+      count: item.count,
+    }));
 
   // Item Engagement data for daily, monthly, and weekly engagement
 
-  const dailyItemData = itemEngagement.itemEngagement.dailyRegistrationTrend.map((item) => ({
-    date: item.date.split('T')[0],
-    count: item.count,
-  }));
+  const dailyItemData = itemEngagement.itemEngagement.dailyRegistrationTrend
+    .slice(-10)
+    .map((item) => ({
+      date: item.date.split('T')[0],
+      count: item.count,
+    }));
 
-  const monthlyItemData = itemEngagement.itemEngagement.monthlyRegistrationTrend.map((item) => ({
-    label: `${item.month}/${item.year}`,
-    count: item.count,
-  }));
+  const monthlyItemData = itemEngagement.itemEngagement.monthlyRegistrationTrend
+    .slice(-12)
+    .map((item) => ({
+      label: `${item.month}/${item.year}`,
+      count: item.count,
+    }));
 
-  const weeklyItemData = itemEngagement.itemEngagement.weeklyRegistrationTrend.map((item) => ({
-    label: `${item.week} week/${item.year}`,
-    count: item.count,
-  }));
+  const weeklyItemData = itemEngagement.itemEngagement.weeklyRegistrationTrend
+    .slice(-12)
+    .map((item) => ({
+      label: `${item.week} week/${item.year}`,
+      count: item.count,
+    }));
 
   // Offer Engagement data for daily, monthly, and weekly engagement
 
-  const dailyOfferData = offerEngagement.offerEngagement.dailyTrend.map((item) => ({
+  const dailyOfferData = offerEngagement.offerEngagement.dailyTrend.slice(-10).map((item) => ({
     date: item.date.split('T')[0],
     count: item.count,
   }));
 
-  const monthlyOfferData = offerEngagement.offerEngagement.monthlyTrend.map((item) => ({
+  const monthlyOfferData = offerEngagement.offerEngagement.monthlyTrend.slice(-12).map((item) => ({
     label: `${item.month}/${item.year}`,
     count: item.count,
   }));
 
-  const weeklyOfferData = offerEngagement.offerEngagement.weeklyTrend.map((item) => ({
+  const weeklyOfferData = offerEngagement.offerEngagement.weeklyTrend.slice(-12).map((item) => ({
     label: `${item.week} week/${item.year}`,
     count: item.count,
   }));

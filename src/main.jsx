@@ -9,7 +9,8 @@ import App from './app';
 // ----------------------------------------------------------------------
 
 const client = new ApolloClient({
-  uri: 'http://13.50.221.83/',
+  uri: 'https://backendtest.switcherooapp.com/',
+  credentials:'include',
   cache: new InMemoryCache(),
 });
 

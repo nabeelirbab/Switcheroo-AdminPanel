@@ -25,7 +25,6 @@ const MENU_OPTIONS = [
 // ----------------------------------------------------------------------
 
 export default function AccountPopover() {
-
   const router = useRouter();
 
   const [open, setOpen] = useState(null);
@@ -37,7 +36,18 @@ export default function AccountPopover() {
   const handleClose = () => {
     setOpen(null);
   };
-  const handleClick = () => {
+
+  const cookieName = 'switcheroo.session';
+
+  // Build the deletion string
+  const deletionString = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+
+  // Set the cookie with the deletion string
+  document.cookie = deletionString;
+
+  const handleLogout = async () => {
+    document.cookie = deletionString;
+    console.log(deletionString, 'Cookie deleted:');
     router.push('/login');
   };
 
@@ -105,7 +115,7 @@ export default function AccountPopover() {
         <MenuItem
           disableRipple
           disableTouchRipple
-          onClick={handleClick}
+          onClick={handleLogout}
           sx={{ typography: 'body2', color: 'error.main', py: 1.5 }}
         >
           Logout
