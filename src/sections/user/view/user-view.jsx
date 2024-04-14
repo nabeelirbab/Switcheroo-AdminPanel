@@ -5,9 +5,11 @@ import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
+import { CircularProgress } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
+
 
 // import { users } from 'src/_mock/user';
 
@@ -68,7 +70,16 @@ export default function UserPage() {
 
   const [deleteUser] = useMutation(DELETE_USER);
 
-  if (loading) return <p>Loading...</p>;
+  if (
+    loading 
+  )
+    return (
+      <div
+        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}
+      >
+        <CircularProgress />
+      </div>
+    );
   if (error) return <p>Error: {error.message}</p>;
   console.log(data, '.........');
 

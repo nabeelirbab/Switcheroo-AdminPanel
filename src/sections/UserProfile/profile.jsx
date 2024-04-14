@@ -8,58 +8,49 @@ import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import CardContent from '@mui/material/CardContent';
 
-const InfoBox = ({ label, value, color }) => (
-  <Typography
-    sx={{
-      fontSize: '16px',
-      display: 'flex',
-      alignItems: 'center',
-      padding: '15px',
-      fontWeight: '600',
-      marginTop: '10px',
-      border: '1px solid #ccc',
-      borderRadius: '5px',
-      boxShadow: '0 0 5px rgba(0, 0, 0, 0.2)',
-      ...(color && { color }),
-    }}
-    variant="body2"
-    color="text.primary"
-  >
-    {label}:{' '}
-    <Typography color="text.secondary" sx={{ marginLeft: '10px' }}>
-      {value}
-    </Typography>
-  </Typography>
-);
+const InfoBox = ({ label, value, color }) => {
+  let valueColor = 'text.secondary';
+  let valueStyle = {};
 
-export default function UserProfile() {
-  const user = {
-    name: 'John Doe',
-    email: 'john@example.com',
-    avatarUrl: 'https://via.placeholder.com/150',
-    dateOfBirth: '1990-01-01',
-    distance: '5 miles',
-    itemCount: 10,
-    matchedItemCount: 5,
-    unMatchedItemCount: 5,
-    itemImages: [
-      'https://via.placeholder.com/100',
-      'https://via.placeholder.com/100',
-      'https://via.placeholder.com/100',
-      'https://via.placeholder.com/100',
-      'https://via.placeholder.com/100',
-      'https://via.placeholder.com/100',
-      'https://via.placeholder.com/100',
-      'https://via.placeholder.com/100',
-      'https://via.placeholder.com/100',
-      'https://via.placeholder.com/100',
-      'https://via.placeholder.com/100',
-      'https://via.placeholder.com/100',
-      'https://via.placeholder.com/100',
-      'https://via.placeholder.com/100',
-      'https://via.placeholder.com/100',
-    ],
-  };
+  // Check if the value is "status"
+  if (label.toLowerCase() === 'status') {
+    valueColor = '#007867'; // Set color to green for status
+    valueStyle = {
+      fontSize: '12px',
+      fontWeight: 'bold',
+      backgroundColor: 'rgba(0, 167, 111, 0.16)',
+      padding: '0px 6px',
+      borderRadius: '4px',
+    };
+  }
+
+  return (
+    <Typography
+      sx={{
+        fontSize: '14px',
+        display: 'flex',
+        alignItems: 'center',
+        padding: '15px',
+        fontWeight: '600',
+        marginTop: '10px',
+        border: '1px solid #ccc',
+        borderRadius: '5px',
+        boxShadow: '0 0 5px rgba(0, 0, 0, 0.2)',
+        ...(color && { color }),
+      }}
+      variant="body2"
+      color="text.primary"
+    >
+      {label}:{' '}
+      <Typography color={valueColor} sx={{ marginLeft: '10px', ...valueStyle }}>
+        {value}
+      </Typography>
+    </Typography>
+  );
+};
+
+export default function UserProfile({ user }) {
+  console.log(user.id, 'item count');
 
   return (
     <Card sx={{ padding: '20px' }}>
@@ -79,7 +70,7 @@ export default function UserProfile() {
                       variant="h3"
                       component="div"
                     >
-                      {user.name}
+                      {user.name} {user.lastname}
                     </Typography>
                   </Grid>
                 </Grid>
@@ -95,43 +86,14 @@ export default function UserProfile() {
                     day: 'numeric',
                   })}
                 />
-                <InfoBox label="Distance" value={user.distance} />
-                <InfoBox label="Item Count" value={user.itemCount} />
-                <InfoBox
-                  label="Matched Item Count"
-                  value={user.matchedItemCount}
-                  color={user.matchedItemCount > 0 ? 'green' : null}
-                />
-                <InfoBox
-                  label="Unmatched Item Count"
-                  value={user.unMatchedItemCount}
-                  color={user.unMatchedItemCount > 0 ? 'red' : null}
-                />
+                {/* <InfoBox label="Distance" value={user.distance} /> */}
+                <InfoBox label="Items Count" value={user.totalitems} />
+                <InfoBox label="Matched Items Count" value={user.matchedItems} color="green" />
+                <InfoBox label="UnMatched Item Count" value="0" color="red" />
+                <InfoBox label="Status" value="Active" />
               </Grid>
             </Grid>
           </Grid>
-          {/* <Grid item xs={12} md={6}>
-            <Typography variant="body2" color="text.secondary">
-              <strong>Item Images:</strong>
-            </Typography>
-            <Grid container spacing={2}>
-              {user.itemImages.map((imageUrl, index) => (
-                <Grid item key={index}>
-                  <img
-                    src={imageUrl}
-                    alt={`Item ${index + 1}`}
-                    style={{
-                      borderRadius: '5px',
-                      boxShadow: '0 0 5px rgba(0, 0, 0, 0.2)',
-                      width: '100px',
-                      height: '100px',
-                      margin: '5px',
-                    }}
-                  />
-                </Grid>
-              ))}
-            </Grid>
-          </Grid> */}
         </Grid>
       </CardContent>
     </Card>
@@ -143,4 +105,21 @@ InfoBox.propTypes = {
   label: PropTypes.string.isRequired,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   color: PropTypes.string,
+};
+
+UserProfile.propTypes = {
+  user: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    name: PropTypes.string.isRequired,
+    lastname: PropTypes.string.isRequired,
+    email: PropTypes.string.isRequired,
+    status: PropTypes.string,
+    avatarUrl: PropTypes.string,
+    dateOfBirth: PropTypes.string.isRequired,
+    distance: PropTypes.string.isRequired,
+    totalitems: PropTypes.number.isRequired,
+    matchedItems: PropTypes.number.isRequired,
+    unMatchedItemCount: PropTypes.number.isRequired,
+    itemImages: PropTypes.arrayOf(PropTypes.string).isRequired,
+  }).isRequired,
 };

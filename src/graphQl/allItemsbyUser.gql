@@ -1,0 +1,21 @@
+import { gql } from '@apollo/client';
+
+export const GET_ALL_ITEMS_BY_USER = gql`
+  query AllItemsByUser($userId: Uuid!) {
+  allItemsByUser(limit: 100, userId: $userId) {
+    cursor
+    hasNextPage
+    totalCount
+    data {
+      askingPrice
+      description
+      id
+      imageUrls
+      mainImageUrl
+      title
+      isDeleted
+    }
+  }
+}
+
+`;

@@ -1,45 +1,33 @@
 import { useState } from 'react';
-import { gql, useQuery, useMutation } from '@apollo/client';
+import { useQuery, useMutation } from '@apollo/client';
 
 import Fade from '@mui/material/Fade';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import { Box,CircularProgress } from '@mui/material';
 
 // import { products } from 'src/_mock/products';
 
 import ProductCard from '../product-card';
+import {DELETE_ITEM} from "../../../graphQl/DeleteItem.gql"
+import {TOTAL_ITEMS} from "../../../graphQl/AllItemInDatabase.gql"
 
 // ----------------------------------------------------------------------
 
-const TOTAL_ITEMS = gql`
-  query AllItemsInDatabase {
-    allItemsInDatabase(limit: 1000) {
-      totalCount
-      data {
-        askingPrice
-        description
-        id
-        mainImageUrl
-        title
-      }
-    }
-  }
-`;
-
-const DELETE_ITEM = gql`
-  mutation DeleteItem($itemId: Uuid!) {
-    deleteItem(itemId: $itemId)
-  }
-`;
 
 export default function ProductsView() {
   const [searchQuery, setSearchQuery] = useState('');
   const [deleteItem] = useMutation(DELETE_ITEM);
   const { loading: itemloading, error: itemerror, data: itemdata } = useQuery(TOTAL_ITEMS);
 
-  if (itemloading) return <p>Loading...</p>;
+  if (itemloading)
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+        <CircularProgress />
+      </Box>
+    );
   if (itemerror) return <p>Error: {itemerror.message}</p>;
 
   const allItems = itemdata.allItemsInDatabase.data;

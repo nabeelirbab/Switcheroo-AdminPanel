@@ -16,6 +16,7 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 
 export default function UserTableRow({
+  id,
   selected,
   name,
   email,
@@ -32,10 +33,8 @@ export default function UserTableRow({
   const [openProfile, setOpenProfile] = useState(false);
   const navigateTo = useNavigate();
 
-  const handleClick = (event) => {
-    if (!openMenu && !openDeleteConfirm) {
-      setOpenProfile(true);
-    }
+  const handleClick = () => {
+    setOpenProfile(true);
   };
 
   const handleOpenMenu = (event) => {
@@ -62,7 +61,9 @@ export default function UserTableRow({
   };
 
   if (openProfile) {
-    navigateTo('/user-profile');
+    return navigateTo(`/user-profile/${id}`, {
+      state: { user: { id, name, email, totalitems, matchedItems, avatarUrl, status, lastname } }
+    });
   }
 
   return (
@@ -151,5 +152,6 @@ UserTableRow.propTypes = {
   totalitems: PropTypes.any,
   selected: PropTypes.any,
   status: PropTypes.string,
+  id: PropTypes.number.isRequired,
   users: PropTypes.object.isRequired,
 };

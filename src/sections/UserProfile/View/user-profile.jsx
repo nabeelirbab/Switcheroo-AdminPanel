@@ -1,37 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useLocation } from 'react-router-dom';
 
 import { Box, Tab, Tabs, AppBar, Typography } from '@mui/material';
 
 import ChatList from '../chats';
 import UserProfile from '../profile';
 import ListedItems from '../user-items';
-
-// const query = `
-//   query AllItemsInDatabase {
-//     allItemsInDatabase(limit: 100) {
-//       cursor
-//       hasNextPage
-//       totalCount
-//     }
-//   }
-// `;
-
-// fetch('http://16.171.36.179:5000', {
-//   method: 'POST',
-//   headers: {
-//     'Content-Type': 'application/json',
-//     // Add any other headers as needed, e.g., authorization token
-//   },
-//   body: JSON.stringify({ query }),
-// })
-//   .then((response) => response.json())
-//   .then((data) => {
-//     console.log('Query result:', data);
-//   })
-//   .catch((error) => {
-//     console.error('Error executing query:', error);
-//   });
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -55,6 +30,8 @@ function TabPanel(props) {
 
 export default function ProfileTabs() {
   const [tabIndex, setTabIndex] = React.useState(0);
+  const location = useLocation();
+  const userData = location.state ? location.state.user : null;
 
   const handleTabChange = (event, newValue) => {
     setTabIndex(newValue);
@@ -88,10 +65,10 @@ export default function ProfileTabs() {
         </Tabs>
       </AppBar>
       <TabPanel value={tabIndex} index={0}>
-        <UserProfile />
+        {userData && <UserProfile user={userData} />}
       </TabPanel>
       <TabPanel value={tabIndex} index={1}>
-        <ListedItems />
+      {userData && <ListedItems user={userData} />}
       </TabPanel>
       <TabPanel value={tabIndex} index={2}>
         <ChatList />

@@ -10,6 +10,7 @@ export const TOTAL_ITEMS = gql`
         id
         mainImageUrl
         title
+        isDeleted
       }
     }
   }

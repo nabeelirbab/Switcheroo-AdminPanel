@@ -3,8 +3,7 @@ import { gql, useQuery, useMutation } from '@apollo/client';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
-
-// import { products } from 'src/_mock/products';
+import {Box,CircularProgress} from '@mui/material';
 
 import ProductCard from '../product-card';
 
@@ -22,17 +21,9 @@ const RESTRICTED_PRODUCTS = gql`
       updatedByUserId
       targetItem {
         askingPrice
-        categories
-        createdByUserId
         description
-        flexibilityRange
         id
         imageUrls
-        isFlexible
-        isHidden
-        isSwapOnly
-        latitude
-        longitude
         mainImageUrl
         title
         updatedByUserId
@@ -51,7 +42,12 @@ export default function ProductsView() {
   const { loading, error, data } = useQuery(RESTRICTED_PRODUCTS);
   const [deleteItem] = useMutation(DELETE_ITEM);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading)
+  return (
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+      <CircularProgress />
+    </Box>
+  );
   if (error) return <p>Error: {error.message}</p>;
   console.log(data.restrictedItems, '.....Restricted Products....');
 

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
+import { Button } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import Popover from '@mui/material/Popover';
@@ -24,6 +25,7 @@ export default function UserTableRow({
   handleDeleteUser,
 }) {
   const [open, setOpen] = useState(null);
+  const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -33,18 +35,22 @@ export default function UserTableRow({
     setOpen(null);
   };
 
-  const [isDeleting, setIsDeleting] = useState(false);
+  const handleOpenDeleteConfirm = () => {
+    setOpenDeleteConfirm(true);
+    handleCloseMenu();
+  };
+
+  const handleCloseDeleteConfirm = () => {
+    setOpenDeleteConfirm(false);
+  };
 
   const handleDeleteUserss = async () => {
-    setIsDeleting(true);
     const targetUserId = targetUser.id;
     console.log('Deleting item with ID:', targetUserId);
     try {
       await handleDeleteUser(targetUserId);
-      setIsDeleting(false);
     } catch (error) {
       console.error('Error deleting user:', error);
-      setIsDeleting(false);
     }
   };
 
@@ -64,14 +70,13 @@ export default function UserTableRow({
 
         <TableCell>{targetUser?.email}</TableCell>
 
-        <TableCell >{description}</TableCell>
+        <TableCell>{description}</TableCell>
 
         <TableCell>
-          <Label align="center" >{createdUser?.firstName} {createdUser?.lastName}</Label>
+          <Label align="center">
+            {createdUser?.firstName} {createdUser?.lastName}
+          </Label>
         </TableCell>
-
-        
-
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
@@ -90,18 +95,31 @@ export default function UserTableRow({
           sx: { width: 140 },
         }}
       >
-
-        <MenuItem
-          onClick={() => {
-            handleDeleteUserss();
-            handleCloseMenu()
-          }}
-          disabled={isDeleting}
-          sx={{ color: 'error.main' }}
-        >
+        <MenuItem onClick={handleOpenDeleteConfirm} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
-          {isDeleting ? 'Deleting...' : 'Delete'}
+          Delete
         </MenuItem>
+      </Popover>
+
+      <Popover
+        open={openDeleteConfirm}
+        onClose={handleCloseDeleteConfirm}
+        anchorOrigin={{ vertical: 'center', horizontal: 'center' }}
+        transformOrigin={{ vertical: 'center', horizontal: 'center' }}
+      >
+        <Stack p={2} alignItems="center">
+          <Typography sx={{ mb: '20px' }} variant="body1">
+            Are you sure you want to delete?
+          </Typography>
+          <Stack direction="row" spacing={2}>
+            <Button variant="contained" onClick={handleDeleteUserss} color="error">
+              Yes
+            </Button>
+            <Button variant="contained" onClick={handleCloseDeleteConfirm}>
+              No
+            </Button>
+          </Stack>
+        </Stack>
       </Popover>
     </>
   );
@@ -110,7 +128,7 @@ export default function UserTableRow({
 UserTableRow.propTypes = {
   targetUser: PropTypes.shape({
     avatarUrl: PropTypes.string,
-    id:PropTypes.number,
+    id: PropTypes.number,
     email: PropTypes.string,
     firstName: PropTypes.string,
     lastName: PropTypes.string,

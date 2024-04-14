@@ -23,13 +23,13 @@ const routes = [
       </DashboardLayout>
     ),
     children: [
-      { path: "dashboard", element: <IndexPage /> },
+      { path: 'dashboard', element: <IndexPage /> },
       { path: 'user', element: <UserPage /> },
       { path: 'reported-products', element: <ProductsPage /> },
       { path: 'reported-user', element: <ReportedUserPage /> },
       { path: 'total-items', element: <TotalItemsPage /> },
       { path: 'notifications', element: <NotificationsPage /> },
-      { path: 'user-profile', element: <UserProfile /> },
+      { path: 'user-profile/:userId', element: <UserProfile /> },
     ],
   },
   {
@@ -50,7 +50,6 @@ export default function Router() {
   // const { isAuthenticated } = useAuth(); // Get authentication state from AuthContext
   const routingConfig = useRoutes(routes);
 
- 
   // Check authentication before rendering routes
   if (window.location.pathname === '/') {
     // If user is not authenticated, redirect to login page

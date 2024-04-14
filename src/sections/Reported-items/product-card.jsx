@@ -65,20 +65,23 @@ export default function ShopProductCard({ product, handleDeleteItem }) {
     <Card>
       <Box sx={{ pt: '100%', position: 'relative' }}>{renderImg}</Box>
       <Stack spacing={2} sx={{ p: 2 }}>
-        <Link color="inherit" underline="hover" variant="subtitle2" noWrap>
+        <Link color="inherit" underline="hover" variant="h6" noWrap>
           {product.title}
         </Link>
         <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <Typography sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <Typography color='text.secondary' sx={{fontWeight:'14px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {product.description}
           </Typography>
           {renderPrice}
         </Stack>
+        <Typography sx={{fontSize:'14px', fontWeight:'bold'}}>
+          Status : <Label sx={{marginLeft:'4px'}} color={product.isDeleted ? 'error' : 'success'}>{product.isDeleted ? 'Deleted' : 'Active'}</Label>
+        </Typography>
       </Stack>
       <TableCell>
-        <Label sx={{ cursor: 'pointer' }} color="error" onClick={handleClickDelete}>
+      <Button disabled={product.isDeleted} sx={{ cursor: 'pointer' }} color="error" onClick={handleClickDelete}>
           Delete
-        </Label>
+        </Button>
       </TableCell>
       <Popover
         open={open}
@@ -114,6 +117,7 @@ ShopProductCard.propTypes = {
     title: PropTypes.string,
     description: PropTypes.string,
     askingPrice: PropTypes.number,
+    isDeleted: PropTypes.bool,
     priceSale: PropTypes.number,
   }),
   handleDeleteItem: PropTypes.func.isRequired,
