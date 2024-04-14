@@ -26,6 +26,7 @@ export default function UserTableRow({
   status,
   handleDelete,
   lastname,
+  isDeleted,
   users,
 }) {
   const [openMenu, setOpenMenu] = useState(null);
@@ -38,7 +39,7 @@ export default function UserTableRow({
   };
 
   const handleOpenMenu = (event) => {
-    event.stopPropagation(); 
+    event.stopPropagation();
     setOpenMenu(event.currentTarget);
   };
 
@@ -62,7 +63,7 @@ export default function UserTableRow({
 
   if (openProfile) {
     return navigateTo(`/user-profile/${id}`, {
-      state: { user: { id, name, email, totalitems, matchedItems, avatarUrl, status, lastname } }
+      state: { user: { id, name, email, totalitems, matchedItems, avatarUrl, status, lastname } },
     });
   }
 
@@ -92,11 +93,13 @@ export default function UserTableRow({
         <TableCell align="center">{matchedItems}</TableCell>
 
         <TableCell>
-          <Label color={(status === 'banned' && 'error') || 'success'}>Active</Label>
+          <Label color={(isDeleted && 'error') || 'success'}>
+            {isDeleted ? 'Deleted' : 'Active'}
+          </Label>
         </TableCell>
 
         <TableCell align="right">
-          <IconButton onClick={handleOpenMenu}>
+          <IconButton onClick={handleOpenMenu} disabled={isDeleted}>
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
         </TableCell>
@@ -152,6 +155,7 @@ UserTableRow.propTypes = {
   totalitems: PropTypes.any,
   selected: PropTypes.any,
   status: PropTypes.string,
+  isDeleted: PropTypes.bool,
   id: PropTypes.number.isRequired,
   users: PropTypes.object.isRequired,
 };

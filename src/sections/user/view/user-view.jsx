@@ -38,6 +38,7 @@ const GET_ALL_USERS = gql`
         matchedItemCount
         gender
         avatarUrl
+        isDeleted
       }
       totalCount
       hasNextPage
@@ -195,6 +196,7 @@ export default function UserPage() {
                       matchedItems={row.matchedItemCount}
                       selected={selected.indexOf(row.id) !== -1}
                       users={row}
+                      isDeleted={row.isDeleted}
                       handleDelete={() => handleDeleteUser(row.id)}
                     />
                   ))}
