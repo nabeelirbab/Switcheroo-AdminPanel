@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types';
 
-import Box from '@mui/material/Box';
+// import Box from '@mui/material/Box';
 import TableRow from '@mui/material/TableRow';
 // import Checkbox from '@mui/material/Checkbox';
 import TableHead from '@mui/material/TableHead';
 import TableCell from '@mui/material/TableCell';
 import TableSortLabel from '@mui/material/TableSortLabel';
 
-import { visuallyHidden } from './utils';
+// import { visuallyHidden } from './utils';
 
 // ----------------------------------------------------------------------
 
@@ -20,9 +20,9 @@ export default function UserTableHead({
   onRequestSort,
   onSelectAllClick,
 }) {
-  const onSort = (property) => (event) => {
-    onRequestSort(event, property);
-  };
+  // const onSort = (property) => (event) => {
+  //   onRequestSort(event, property);
+  // };
 
   return (
     <TableHead>
@@ -37,16 +37,16 @@ export default function UserTableHead({
           >
             <TableSortLabel
               hideSortIcon
-              active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : 'asc'}
-              onClick={onSort(headCell.id)}
+              // active={orderBy === headCell.id}
+              // direction={orderBy === headCell.id ? order : 'asc'}
+              // onClick={onSort(headCell.id)}
             >
               {headCell.label}
-              {orderBy === headCell.id ? (
+              {/* {orderBy === headCell.id ? (
                 <Box sx={{ ...visuallyHidden }}>
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                 </Box>
-              ) : null}
+              ) : null} */}
             </TableSortLabel>
           </TableCell>
         ))}

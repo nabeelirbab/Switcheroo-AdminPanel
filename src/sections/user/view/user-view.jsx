@@ -48,7 +48,7 @@ export default function UserPage() {
 
   const [filterName, setFilterName] = useState('');
 
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const { loading, error, data, refetch } = useQuery(GET_ALL_USERS);
 
@@ -69,7 +69,7 @@ export default function UserPage() {
 
   const userss = data.users.data;
 
-  const rowsPerPageOptions = [5, 10, 25, userss && userss.length > 0 ? 'View All' : null].filter(
+  const rowsPerPageOptions = [10, 20, 30, userss && userss.length > 0 ? 'View All' : null].filter(
     (option) => option !== null
   );
 
@@ -157,8 +157,10 @@ export default function UserPage() {
                 headLabel={[
                   { id: 'name', label: 'Name' },
                   { id: 'email', label: 'Email' },
-                  { id: 'totalitems', label: 'Total Items' },
+                  { id: 'totalitems', label: 'Total Items',align:'center' },
                   { id: 'matcheditems', label: 'Matched Items', align: 'center' },
+                  { id: 'gender', label: 'Gender', align: 'center' },
+                  { id: 'dateofbirth', label: 'Date of Birth', align: 'center' },
                   { id: 'status', label: 'Status' },
                   { id: '' },
                 ]}
@@ -180,6 +182,8 @@ export default function UserPage() {
                       selected={selected.indexOf(row.id) !== -1}
                       users={row}
                       isDeleted={row.isDeleted}
+                      gender={row.gender} 
+                      dateOfBirth={row.dateOfBirth}
                       handleDelete={() => handleDeleteUser(row.id)}
                     />
                   ))}

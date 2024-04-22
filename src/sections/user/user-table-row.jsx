@@ -27,6 +27,8 @@ export default function UserTableRow({
   handleDelete,
   lastname,
   isDeleted,
+  dateOfBirth,
+  gender,
   users,
 }) {
   const [openMenu, setOpenMenu] = useState(null);
@@ -63,7 +65,20 @@ export default function UserTableRow({
 
   if (openProfile) {
     return navigateTo(`/user-profile/${id}`, {
-      state: { user: { id, name, email, totalitems, matchedItems, avatarUrl, isDeleted, lastname } },
+      state: {
+        user: {
+          id,
+          name,
+          email,
+          totalitems,
+          matchedItems,
+          avatarUrl,
+          isDeleted,
+          lastname,
+          dateOfBirth,
+          gender,
+        },
+      },
     });
   }
 
@@ -88,9 +103,22 @@ export default function UserTableRow({
 
         <TableCell>{email}</TableCell>
 
-        <TableCell>{totalitems}</TableCell>
+        <TableCell align="center">{totalitems}</TableCell>
 
         <TableCell align="center">{matchedItems}</TableCell>
+
+        <TableCell align="center">
+          {gender !== null && gender !== undefined && gender !== '' ? gender : '-'}
+        </TableCell>
+        <TableCell align="center">
+          {dateOfBirth
+            ? new Date(dateOfBirth).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })
+            : '-'}
+        </TableCell>
 
         <TableCell>
           <Label color={(isDeleted && 'error') || 'success'}>
@@ -153,6 +181,8 @@ UserTableRow.propTypes = {
   name: PropTypes.any,
   lastname: PropTypes.any,
   totalitems: PropTypes.any,
+  gender: PropTypes.any,
+  dateOfBirth: PropTypes.any,
   selected: PropTypes.any,
   status: PropTypes.string,
   isDeleted: PropTypes.bool,

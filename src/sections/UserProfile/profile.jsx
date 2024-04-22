@@ -56,6 +56,8 @@ const InfoBox = ({ label, value, color }) => {
 const UserProfile = ({ user }) => {
   const status = user.isDeleted ? 'Deleted' : 'Active';
 
+  console.log(user,'userdata')
+
   return (
     <Card sx={{ padding: '20px' }}>
       <CardContent>
@@ -82,15 +84,17 @@ const UserProfile = ({ user }) => {
 
               <Grid item xs={12}>
                 <InfoBox label="Email" value={user.email} />
-                <InfoBox
-                  label="Date of Birth"
-                  value={new Date(user.dateOfBirth).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
-                />
-                {/* <InfoBox label="Distance" value={user.distance} /> */}
+                {user.dateOfBirth && (
+                  <InfoBox
+                    label="Date of Birth"
+                    value={new Date(user.dateOfBirth).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  />
+                )}
+                {user.gender && <InfoBox label="Gender" value={user.gender} />}
                 <InfoBox label="Items Count" value={user.totalitems} />
                 <InfoBox label="Matched Items Count" value={user.matchedItems} color="green" />
                 <InfoBox label="UnMatched Item Count" value="0" color="red" />
@@ -120,8 +124,8 @@ UserProfile.propTypes = {
     isDeleted: PropTypes.bool.isRequired,
     status: PropTypes.string,
     avatarUrl: PropTypes.string,
-    dateOfBirth: PropTypes.string.isRequired,
-    distance: PropTypes.string.isRequired,
+    dateOfBirth: PropTypes.string,
+    gender: PropTypes.string,
     totalitems: PropTypes.number.isRequired,
     matchedItems: PropTypes.number.isRequired,
     unMatchedItemCount: PropTypes.number.isRequired,

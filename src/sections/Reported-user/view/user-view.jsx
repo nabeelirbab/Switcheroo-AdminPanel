@@ -54,7 +54,7 @@ export default function UserPage() {
   const [selected, setSelected] = useState([]);
   const [orderBy, setOrderBy] = useState('name');
   const [filterName, setFilterName] = useState('');
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [reportedUsers, setReportedUsers] = useState([]);
 
   const { loading, error, data } = useQuery(GET_REPORTED_USERS);
@@ -69,9 +69,9 @@ export default function UserPage() {
   console.log(reportedUsers, 'Restricted UsERS');
 
   const rowsPerPageOptions = [
-    5,
     10,
-    25,
+    20,
+    30,
     reportedUsers && reportedUsers.length > 0 ? 'View All' : null,
   ].filter((option) => option !== null);
 

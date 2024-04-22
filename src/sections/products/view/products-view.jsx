@@ -3,7 +3,7 @@ import { gql, useQuery, useMutation } from '@apollo/client';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
-import {Box,CircularProgress} from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 
 import ProductCard from '../product-card';
 
@@ -43,24 +43,29 @@ export default function ProductsView() {
   const [deleteItem] = useMutation(DELETE_ITEM);
 
   if (loading)
-  return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-      <CircularProgress />
-    </Box>
-  );
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+        <CircularProgress />
+      </Box>
+    );
   if (error) return <p>Error: {error.message}</p>;
   console.log(data.restrictedItems, '.....Restricted Products....');
 
   const restrictedProducts = data.restrictedItems || [];
 
-  const hasRestrictedProducts = restrictedProducts.some(product => product.targetItem.length > 0);
+  const hasRestrictedProducts = restrictedProducts.some((product) => product.targetItem.length > 0);
 
   if (!hasRestrictedProducts) {
     return (
       <Container>
-        <Typography variant="h4" sx={{ mb: 5 }}>
-          Reported Items
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'baseline' }}>
+          <Typography variant="h4" sx={{ p: '20px 10px 20px 20px' }}>
+            Reported Items -
+          </Typography>
+          <Typography variant="h5" sx={{ p: '20px 0px', color: 'grey' }}>
+            {restrictedProducts.length}
+          </Typography>
+        </Box>
         <Typography variant="body1">No restricted Items available.</Typography>
       </Container>
     );
@@ -87,13 +92,16 @@ export default function ProductsView() {
 
   return (
     <Container>
-      <Typography variant="h4" sx={{ mb: 5 }}>
-        Reported Products
-      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'baseline', marginBottom: '10px' }}>
+        <Typography variant="h4">Reported Items -</Typography>
+        <Typography variant="h5" sx={{ paddingLeft: '5px', color: 'grey' }}>
+          {restrictedProducts.length}
+        </Typography>
+      </Box>
 
       <Grid container spacing={3}>
         {restrictedProducts
-          .filter(product => product.targetItem.length > 0) 
+          .filter((product) => product.targetItem.length > 0)
           .map((product) => (
             <Grid key={product.id} xs={12} sm={6} md={3}>
               <ProductCard product={product} handleDeleteItem={handleDeleteItem} />
@@ -103,4 +111,3 @@ export default function ProductsView() {
     </Container>
   );
 }
-

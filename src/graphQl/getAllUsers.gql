@@ -10,6 +10,7 @@ export const GET_ALL_USERS = gql`
         email
         itemCount
         matchedItemCount
+        dateOfBirth
         gender
         avatarUrl
         isDeleted

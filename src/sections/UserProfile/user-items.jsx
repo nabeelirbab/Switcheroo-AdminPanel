@@ -20,15 +20,19 @@ const ListedItems = ({ user }) => {
 
   if (error) return <Typography variant="body1">Error fetching data.</Typography>;
 
-  const items = data.allItemsByUser.data.filter(item => !item.isDeleted); // Filter out deleted items
+  const items = data.allItemsByUser.data.filter((item) => !item.isDeleted); // Filter out deleted items
   console.log(items, 'items data');
 
   console.log(user.id, 'idddddddd');
   return (
     <Card elevation={3}>
-      <Typography variant="h4" sx={{ p: '20px' }}>
-        Uploaded Items
-      </Typography>
+      <Box sx={{display:'flex', alignItems:'center'}}>
+        <Typography variant="h4" sx={{ p: '20px' }}>
+          Uploaded Items
+        </Typography>
+        <Typography variant='h5' sx={{ p: '20px 2px', color:'grey' }}>{items.length}</Typography>
+      </Box>
+
       {items.length === 0 ? (
         <Typography variant="body1" sx={{ p: '20px' }}>
           There are no items listed by this user.

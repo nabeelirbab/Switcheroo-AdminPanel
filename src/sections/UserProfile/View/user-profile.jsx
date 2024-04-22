@@ -32,6 +32,7 @@ export default function ProfileTabs() {
   const [tabIndex, setTabIndex] = React.useState(0);
   const location = useLocation();
   const userData = location.state ? location.state.user : null;
+  console.log(userData,'User DATAAAAAAAA')
 
   const handleTabChange = (event, newValue) => {
     setTabIndex(newValue);
