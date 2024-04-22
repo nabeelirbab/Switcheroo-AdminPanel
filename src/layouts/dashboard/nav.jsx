@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -29,12 +29,22 @@ export default function Nav({ openNav, onCloseNav }) {
 
   const upLg = useResponsive('up', 'lg');
 
+  const [user, setUser] = useState(null);
+
   useEffect(() => {
     if (openNav) {
       onCloseNav();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
+
+  useEffect(() => {
+    // Retrieve user data from local storage
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+  }, []);
 
   const renderAccount = (
     <Box
@@ -49,10 +59,20 @@ export default function Nav({ openNav, onCloseNav }) {
         bgcolor: (theme) => alpha(theme.palette.grey[500], 0.12),
       }}
     >
-      <Avatar src={account.photoURL} alt="photoURL" />
+      {user?.avatarUrl ? (
+        <Avatar src={user.avatarUrl} alt="User Photo" />
+      ) : (
+        <Avatar>
+          {((user?.firstName && user.firstName.charAt(0).toUpperCase()) || '') +
+            ((user?.lastName && user.lastName.charAt(0).toUpperCase()) || '')}
+        </Avatar>
+      )}
 
       <Box sx={{ ml: 2 }}>
-        <Typography variant="subtitle2">{account.displayName}</Typography>
+        <Typography variant="subtitle2">
+          {user?.firstName && user.firstName.charAt(0).toUpperCase() + user.firstName.slice(1)}{' '}
+          {user?.lastName && user.lastName.charAt(0).toUpperCase() + user.lastName.slice(1)}
+        </Typography>
 
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
           {account.role}
@@ -87,7 +107,6 @@ export default function Nav({ openNav, onCloseNav }) {
       {renderMenu}
 
       <Box sx={{ flexGrow: 1 }} />
-
     </Scrollbar>
   );
 

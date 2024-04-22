@@ -68,10 +68,10 @@ export default function ProfileTabs() {
         {userData && <UserProfile user={userData} />}
       </TabPanel>
       <TabPanel value={tabIndex} index={1}>
-      {userData && <ListedItems user={userData} />}
+        {userData && <ListedItems user={userData} />}
       </TabPanel>
       <TabPanel value={tabIndex} index={2}>
-        <ChatList />
+        {userData && <ChatList user={userData} />}
       </TabPanel>
     </div>
   );

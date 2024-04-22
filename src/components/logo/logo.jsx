@@ -3,7 +3,6 @@ import { forwardRef } from 'react';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
-// import { useTheme } from '@mui/material/styles';
 
 import { RouterLink } from 'src/routes/components';
 
@@ -23,7 +22,7 @@ const Logo = forwardRef(({ disabledLink = false, sx, ...other }, ref) => {
       {...other}
     >
       {/* Replace the SVG with an img element */}
-      <img width='70%' src="../../../public/assets/logoBranding-removebg-preview.png" alt="Logo" />
+      <img width='70%' src="/assets/logoBranding-removebg-preview.png" alt="Logo" />
     </Box>
   );
 

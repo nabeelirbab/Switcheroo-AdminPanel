@@ -15,7 +15,7 @@ import TablePagination from '@mui/material/TablePagination';
 
 // import Iconify from 'src/components/iconify';
 
-import { gql, useQuery, useMutation } from '@apollo/client';
+import { useQuery, useMutation } from '@apollo/client';
 
 import Scrollbar from 'src/components/scrollbar';
 
@@ -24,33 +24,16 @@ import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
 import TableEmptyRows from '../table-empty-rows';
 import UserTableToolbar from '../user-table-toolbar';
+import {DELETE_USER} from "../../../graphQl/DeleteUser.gql"
+import {GET_ALL_USERS} from '../../../graphQl/getAllUsers.gql'
 import { emptyRows, applyFilter, getComparator } from '../utils';
 
-const GET_ALL_USERS = gql`
-  query getAllUsers {
-    users(limit: 100) {
-      data {
-        id
-        firstName
-        lastName
-        email
-        itemCount
-        matchedItemCount
-        gender
-        avatarUrl
-        isDeleted
-      }
-      totalCount
-      hasNextPage
-    }
-  }
-`;
 
-const DELETE_USER = gql`
-  mutation DeleteUser($userIds: [Uuid]!) {
-    deleteUser(userIds: $userIds)
-  }
-`;
+// const DELETE_USER = gql`
+//   mutation DeleteUser($userIds: [Uuid]!) {
+//     deleteUser(userIds: $userIds)
+//   }
+// `;
 
 // ----------------------------------------------------------------------
 

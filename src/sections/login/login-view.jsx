@@ -38,10 +38,11 @@ export default function LoginView() {
           password,
         },
       });
-      console.log('Sign-in successful:', data);
+
+      const { signIn } = data;
+      localStorage.setItem('user', JSON.stringify(signIn));
       router.push('/dashboard');
     } catch (err) {
-      console.error('Sign-in error:', err);
       setError('Invalid email or password');
     }
   };
@@ -109,6 +110,7 @@ export default function LoginView() {
           )}
 
           <LoadingButton
+            sx={{ marginTop: '20px' }}
             fullWidth
             size="large"
             type="submit"

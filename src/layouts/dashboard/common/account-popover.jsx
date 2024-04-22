@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useMutation } from '@apollo/client';
 
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
@@ -11,7 +12,7 @@ import IconButton from '@mui/material/IconButton';
 
 import { useRouter } from 'src/routes/hooks';
 
-import { account } from 'src/_mock/account';
+import { SIGN_OUT_MUTATION } from '../../../graphQl/signOut.gql';
 
 // ----------------------------------------------------------------------
 
@@ -28,6 +29,15 @@ export default function AccountPopover() {
   const router = useRouter();
 
   const [open, setOpen] = useState(null);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    // Retrieve user data from local storage
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+  }, []);
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
@@ -37,18 +47,22 @@ export default function AccountPopover() {
     setOpen(null);
   };
 
-  const cookieName = 'switcheroo.session';
-
-  // Build the deletion string
-  const deletionString = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-
-  // Set the cookie with the deletion string
-  document.cookie = deletionString;
+  const [signOut] = useMutation(SIGN_OUT_MUTATION, {
+    onCompleted: () => {
+      router.push('/login');
+    },
+    onError: (error) => {
+      console.error('Sign out failed:', error);
+    },
+  });
 
   const handleLogout = async () => {
-    document.cookie = deletionString;
-    console.log(deletionString, 'Cookie deleted:');
-    router.push('/login');
+    try {
+      await signOut();
+      localStorage.removeItem('user');
+    } catch (error) {
+      console.error('Sign out failed:', error);
+    }
   };
 
   return (
@@ -66,15 +80,16 @@ export default function AccountPopover() {
         }}
       >
         <Avatar
-          src={account.photoURL}
-          alt={account.displayName}
+          src={user?.avatarUrl || ''}
+          alt={`${user?.firstName} ${user?.lastName}`}
           sx={{
             width: 36,
             height: 36,
             border: (theme) => `solid 2px ${theme.palette.background.default}`,
           }}
         >
-          {account.displayName.charAt(0).toUpperCase()}
+          {(user?.firstName && user?.firstName.charAt(0).toUpperCase()) ||
+            (user?.lastName && user?.lastName.charAt(0).toUpperCase())}
         </Avatar>
       </IconButton>
 
@@ -95,10 +110,12 @@ export default function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2 }}>
           <Typography variant="subtitle2" noWrap>
-            {account.displayName}
+            {`${user?.firstName.charAt(0).toUpperCase()}${user?.firstName.slice(1)} ${
+              user?.lastName
+            }`}
           </Typography>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {account.email}
+          <Typography variant="body2" sx={{ color: 'text.secondary' }} >
+            {user?.email}
           </Typography>
         </Box>
 

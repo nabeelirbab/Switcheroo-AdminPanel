@@ -14,11 +14,15 @@ const InfoBox = ({ label, value, color }) => {
 
   // Check if the value is "status"
   if (label.toLowerCase() === 'status') {
-    valueColor = '#007867'; // Set color to green for status
+    valueColor = '#007867';
+    if (value.toLowerCase() === 'deleted') {
+      valueColor = '#B71D18';
+    }
     valueStyle = {
       fontSize: '12px',
       fontWeight: 'bold',
-      backgroundColor: 'rgba(0, 167, 111, 0.16)',
+      backgroundColor:
+        value.toLowerCase() === 'deleted' ? 'rgba(255, 86, 48, 0.16)' : 'rgba(0, 167, 111, 0.16)',
       padding: '0px 6px',
       borderRadius: '4px',
     };
@@ -49,8 +53,8 @@ const InfoBox = ({ label, value, color }) => {
   );
 };
 
-export default function UserProfile({ user }) {
-  console.log(user.id, 'item count');
+const UserProfile = ({ user }) => {
+  const status = user.isDeleted ? 'Deleted' : 'Active';
 
   return (
     <Card sx={{ padding: '20px' }}>
@@ -90,7 +94,7 @@ export default function UserProfile({ user }) {
                 <InfoBox label="Items Count" value={user.totalitems} />
                 <InfoBox label="Matched Items Count" value={user.matchedItems} color="green" />
                 <InfoBox label="UnMatched Item Count" value="0" color="red" />
-                <InfoBox label="Status" value="Active" />
+                <InfoBox label="Status" value={status} />
               </Grid>
             </Grid>
           </Grid>
@@ -98,7 +102,7 @@ export default function UserProfile({ user }) {
       </CardContent>
     </Card>
   );
-}
+};
 
 // PropTypes validation
 InfoBox.propTypes = {
@@ -113,6 +117,7 @@ UserProfile.propTypes = {
     name: PropTypes.string.isRequired,
     lastname: PropTypes.string.isRequired,
     email: PropTypes.string.isRequired,
+    isDeleted: PropTypes.bool.isRequired,
     status: PropTypes.string,
     avatarUrl: PropTypes.string,
     dateOfBirth: PropTypes.string.isRequired,
@@ -123,3 +128,5 @@ UserProfile.propTypes = {
     itemImages: PropTypes.arrayOf(PropTypes.string).isRequired,
   }).isRequired,
 };
+
+export default UserProfile;

@@ -63,7 +63,7 @@ export default function UserTableRow({
 
   if (openProfile) {
     return navigateTo(`/user-profile/${id}`, {
-      state: { user: { id, name, email, totalitems, matchedItems, avatarUrl, status, lastname } },
+      state: { user: { id, name, email, totalitems, matchedItems, avatarUrl, isDeleted, lastname } },
     });
   }
 

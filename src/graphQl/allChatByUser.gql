@@ -1,0 +1,15 @@
+import { gql } from '@apollo/client';
+
+export const ALL_CHAT_BY_USER = gql`
+    query AllChatByUser($userId: Uuid!) {
+     allChatByUser(userId: $userId) {
+        offerId
+        targetUser {
+            avatarUrl
+            email
+            firstName
+            lastName
+        }
+    }
+}
+`;

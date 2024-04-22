@@ -4,26 +4,9 @@ export const SIGN_IN_MUTATION = gql`
   mutation SignIn($email: String!, $password: String!) {
     signIn(email: $email, password: $password) {
       avatarUrl
-      blurb
-      createdAt
-      dateOfBirth
-      distance
       email
-      fCMToken
       firstName
-      gender
-      id
-      initiateSignUpProcess
-      isChatNotificationsEnabled
-      isMatchNotification
-      itemCount
       lastName
-      latitude
-      longitude
-      matchedItemCount
-      mobile
-      unMatchedItemCount
-      username
       userRoles
     }
   }

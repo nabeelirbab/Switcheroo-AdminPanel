@@ -1,52 +1,73 @@
+import PropTypes from 'prop-types';
 import React, { useState } from 'react';
+import { useQuery } from '@apollo/client';
 
-import { List, Avatar, ListItem, Typography, ListItemText, ListItemAvatar } from '@mui/material';
+import {
+  Box,
+  List,
+  Avatar,
+  ListItem,
+  Typography,
+  ListItemText,
+  ListItemAvatar,
+  CircularProgress,
+} from '@mui/material';
 
-const ChatList = () => {
+import { ALL_CHAT_BY_USER } from '../../graphQl/allChatByUser.gql';
+import { GET_ALL_MESSAGES_BY_USER } from '../../graphQl/messages.gql';
+
+const ChatList = ({ user }) => {
+  console.log(user.id, 'user id passing to chat...');
   const [selectedChat, setSelectedChat] = useState(null);
 
-  const chats = [
-    { id: 1, name: 'John Doe', avatarUrl: 'url_to_avatar_1' },
-    { id: 2, name: 'Anderson', avatarUrl: 'url_to_avatar_2' },
-    { id: 3, name: 'Jack White', avatarUrl: 'url_to_avatar_1' },
-    { id: 4, name: 'Micheal', avatarUrl: 'url_to_avatar_2' },
-    { id: 5, name: 'Jhon Anderson', avatarUrl: 'url_to_avatar_1' },
-    { id: 6, name: 'Andrew Mead', avatarUrl: 'url_to_avatar_2' },
-    { id: 7, name: 'Justin Carter', avatarUrl: 'url_to_avatar_1' },
-    { id: 8, name: 'Cenation', avatarUrl: 'url_to_avatar_2' },
-    { id: 9, name: 'Alexandar', avatarUrl: 'url_to_avatar_1' },
-    { id: 10, name: 'Kuliee Ad', avatarUrl: 'url_to_avatar_2' },
-    { id: 11, name: 'Steven Smith', avatarUrl: 'url_to_avatar_1' },
-    { id: 12, name: 'Cristina', avatarUrl: 'url_to_avatar_2' },
-    { id: 13, name: 'Angelina', avatarUrl: 'url_to_avatar_1' },
-    { id: 14, name: 'White James', avatarUrl: 'url_to_avatar_2' },
-    { id: 15, name: 'Chat 1', avatarUrl: 'url_to_avatar_1' },
-    { id: 16, name: 'Chat 2', avatarUrl: 'url_to_avatar_2' },
+  const { loading, error, data } = useQuery(ALL_CHAT_BY_USER, {
+    variables: { userId: user.id },
+  });
 
-    // Add more chats as needed
-  ];
+  console.log(data?.allChatByUser, 'chats');
 
-  const messages = [
-    { id: 1, sender: 'User 1', content: 'Hello!', color: 'rgb(29 159 223)' },
-    { id: 2, sender: 'User 2', content: 'Hi there!', color: '#4caf50' },
-    { id: 3, sender: 'User 1', content: 'How are you?', color: 'rgb(29 159 223)' },
-    { id: 4, sender: 'User 2', content: 'I am doing well, thank you!', color: '#4caf50' },
-    { id: 5, sender: 'User 1', content: 'What are you up to?', color: 'rgb(29 159 223)' },
-    { id: 6, sender: 'User 2', content: 'Just chilling. How about you?', color: '#4caf50' },
-    { id: 7, sender: 'User 1', content: 'Thinking about dinner plans.', color: 'rgb(29 159 223)' },
-    { id: 8, sender: 'User 2', content: 'Sounds good. Any preferences?', color: '#4caf50' },
-    { id: 9, sender: 'User 1', content: 'Im craving Italian food.', color: 'rgb(29 159 223)' },
-    {
-      id: 10,
-      sender: 'User 2',
-      content: 'Great, lets go to that new place downtown.',
-      color: '#4caf50',
-    },
-  ];
+  const chats =
+    data?.allChatByUser.map((chatData) => ({
+      id: chatData.offerId,
+      name: `${chatData.targetUser[0].firstName} ${chatData.targetUser[0].lastName}`,
+      avatarUrl: chatData.targetUser[0].avatarUrl,
+    })) || [];
+
+  const {
+    data: messagesData,
+    loading: messagesLoading,
+    error: messagesError,
+  } = useQuery(GET_ALL_MESSAGES_BY_USER, {
+    variables: { offerId: selectedChat ? selectedChat.id : null }, // Pass selected chat's offerId
+  });
+  console.log(messagesData, 'Messages Data');
+  console.log(messagesError, ',message error');
+  console.log(messagesLoading, 'message loading');
 
   const handleChatSelect = (chat) => {
     setSelectedChat(chat);
   };
+
+  const sortedMessages = messagesData && messagesData.messages ? [...messagesData.messages] : [];
+
+  // Sort messages by createdAt timestamp in ascending order
+  sortedMessages.sort((a, b) => {
+    if (a.createdAt < b.createdAt) return -1;
+    if (a.createdAt > b.createdAt) return 1;
+    return 0;
+  });
+
+  console.log(sortedMessages, 'sorted messages');
+
+  if (loading)
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+
+  if (error)
+    return <Typography variant="body1">{error?.message || messagesError?.message}</Typography>;
 
   return (
     <div style={{ display: 'flex' }}>
@@ -58,22 +79,31 @@ const ChatList = () => {
         >
           Chats
         </Typography>
-        <List>
-          {chats.map((chat) => (
-            <ListItem
-            key={chat.id}
-            alignItems="flex-start"
-            button
-            onClick={() => handleChatSelect(chat)}
-            sx={{ marginTop: '10px', alignItems: 'center', backgroundColor: selectedChat && selectedChat.id === chat.id ? '#f0f0f0' : 'inherit' }}
-          >
-              <ListItemAvatar sx={{ marginTop: '0px' }}>
-                <Avatar alt={chat.name} src={chat.avatarUrl} />
-              </ListItemAvatar>
-              <ListItemText sx={{ fontWeight: 700 }} primary={chat.name} />
-            </ListItem>
-          ))}
-        </List>
+        {chats.length === 0 ? (
+          <Typography variant="body1">No chats available.</Typography>
+        ) : (
+          <List>
+            {chats.map((chat) => (
+              <ListItem
+                key={chat.id}
+                alignItems="flex-start"
+                button
+                onClick={() => handleChatSelect(chat)}
+                sx={{
+                  marginTop: '10px',
+                  alignItems: 'center',
+                  backgroundColor:
+                    selectedChat && selectedChat.id === chat.id ? '#f0f0f0' : 'inherit',
+                }}
+              >
+                <ListItemAvatar sx={{ marginTop: '0px' }}>
+                  <Avatar alt={chat.name} src={chat.avatarUrl} />
+                </ListItemAvatar>
+                <ListItemText sx={{ fontWeight: 700 }} primary={chat.name} />
+              </ListItem>
+            ))}
+          </List>
+        )}
       </div>
       <div
         style={{
@@ -105,31 +135,33 @@ const ChatList = () => {
               </Typography>
             </div>
             <div style={{ maxHeight: '900px', overflowY: 'auto' }}>
-              {messages.map((message) => (
+              {sortedMessages.map((message) => (
                 <div
-                  key={message.id}
+                  key={message.createdAt}
                   style={{
                     display: 'flex',
-                    justifyContent: message.sender === 'User 1' ? 'flex-start' : 'flex-end', // Adjust avatar position
+                    justifyContent: message.createdByUserId !== user.id ? 'flex-end' : 'flex-start',
                     marginBottom: '10px',
+                    alignItems: 'flex-start'
                   }}
                 >
-                  {message.sender === 'User 1' ? ( // Render Avatar on the left for User 1
+                  {message.createdByUserId !== user.id ? (
                     <Avatar
                       alt={message.sender}
                       src={selectedChat.avatarUrl}
-                      sx={{ width: '40px', height: '40px', marginRight: '10px' }}
+                      sx={{ width: '40px', height: '40px', marginRight: '10px', marginTop:'5px' }}
                     />
                   ) : (
                     <div style={{ flex: 1 }} />
                   )}
+
                   <div
                     style={{
                       letterSpacing: '1.5px',
                       color: 'white',
-                      backgroundColor: message.color,
-                      height: '30px',
-                      padding: '2px 12px',
+                      backgroundColor:
+                        message.createdByUserId === user.id ? '#4caf50' : 'rgb(29 159 223)',
+                      padding: '4px 10px',
                       borderRadius: '8px',
                       maxWidth: '70%',
                     }}
@@ -139,14 +171,21 @@ const ChatList = () => {
                       variant="subtitle"
                       gutterBottom
                     >
-                      {message.sender}: {message.content}
+                      {message.messageText}
                     </Typography>
+                    {/* <Typography
+                      sx={{ letterSpacing: '1px', marginBottom: '0px', fontSize: '10px' }}
+                      variant="subtitle"
+                      gutterBottom
+                    >
+                      {message.createdAt} 
+                    </Typography> */}
                   </div>
-                  {message.sender !== 'User 1' ? ( 
+                  {message.createdByUserId === user.id ? ( 
                     <Avatar
                       alt={message.sender}
-                      src={selectedChat.avatarUrl} 
-                      sx={{ width: '40px', height: '40px', marginLeft: '10px' }}
+                      src={message.targetUser.avatarUrl}
+                      sx={{ width: '40px', height: '40px', marginLeft: '10px', marginTop:'5px' }}
                     />
                   ) : (
                     <div style={{ flex: 1 }} />
@@ -162,3 +201,9 @@ const ChatList = () => {
 };
 
 export default ChatList;
+
+ChatList.propTypes = {
+  user: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+  }).isRequired,
+};

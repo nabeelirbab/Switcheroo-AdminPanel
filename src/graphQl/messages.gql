@@ -1,0 +1,15 @@
+import { gql } from '@apollo/client';
+
+export const GET_ALL_MESSAGES_BY_USER = gql`
+  query Messages($offerId: Uuid!) {
+    messages(offerId: $offerId) {
+      createdByUserId
+        messageText
+        createdAt
+        userId
+        targetUser {
+            avatarUrl
+        }
+    }
+  }
+`;
