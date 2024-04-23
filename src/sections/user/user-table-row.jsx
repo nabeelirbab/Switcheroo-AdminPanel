@@ -27,7 +27,7 @@ export default function UserTableRow({
   handleDelete,
   lastname,
   isDeleted,
-  dateOfBirth,
+  createdAt,
   gender,
   users,
 }) {
@@ -75,7 +75,7 @@ export default function UserTableRow({
           avatarUrl,
           isDeleted,
           lastname,
-          dateOfBirth,
+          createdAt,
           gender,
         },
       },
@@ -111,8 +111,8 @@ export default function UserTableRow({
           {gender !== null && gender !== undefined && gender !== '' ? gender : '-'}
         </TableCell>
         <TableCell align="center">
-          {dateOfBirth
-            ? new Date(dateOfBirth).toLocaleDateString('en-US', {
+          {createdAt
+            ? new Date(createdAt).toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',
@@ -182,7 +182,7 @@ UserTableRow.propTypes = {
   lastname: PropTypes.any,
   totalitems: PropTypes.any,
   gender: PropTypes.any,
-  dateOfBirth: PropTypes.any,
+  createdAt: PropTypes.any,
   selected: PropTypes.any,
   status: PropTypes.string,
   isDeleted: PropTypes.bool,

@@ -100,22 +100,24 @@ export default function NotificationView() {
 
       {/* Notification List */}
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-        {data.notifications.map((notification, index) => (
-          <Card key={notification.id} sx={{ minWidth: 300, maxWidth: 300, minHeight: 150 }}>
-            <CardContent>
-              <Typography variant="h6" sx={{ mb: 1, fontWeight: 'bold', color: 'primary.main' }}>
-                Notification {index + 1}
-              </Typography>
-              <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                Title : {notification.title}
-              </Typography>
-              <Typography variant="body2">Description : {notification.description}</Typography>
-            </CardContent>
-          </Card>
-        ))}
+        {data.notifications
+          .slice()
+          .reverse()
+          .map((notification, index) => (
+            <Card key={notification.id} sx={{ minWidth: 300, maxWidth: 300, minHeight: 150 }}>
+              <CardContent>
+                <Typography variant="h6" sx={{ mb: 1, fontWeight: 'bold', color: 'primary.main' }}>
+                  Notification {data.notifications.length - index}
+                </Typography>
+                <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                  Title : {notification.title}
+                </Typography>
+                <Typography variant="body2">Description : {notification.description}</Typography>
+              </CardContent>
+            </Card>
+          ))}
       </Box>
 
-      {/* Create Notification Modal */}
       <Modal
         open={openModal}
         onClose={handleCloseModal}

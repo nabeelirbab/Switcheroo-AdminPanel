@@ -84,10 +84,10 @@ const UserProfile = ({ user }) => {
 
               <Grid item xs={12}>
                 <InfoBox label="Email" value={user.email} />
-                {user.dateOfBirth && (
+                {user.createdAt && (
                   <InfoBox
-                    label="Date of Birth"
-                    value={new Date(user.dateOfBirth).toLocaleDateString('en-US', {
+                    label="Registered"
+                    value={new Date(user.createdAt).toLocaleDateString('en-US', {
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric',
@@ -124,7 +124,7 @@ UserProfile.propTypes = {
     isDeleted: PropTypes.bool.isRequired,
     status: PropTypes.string,
     avatarUrl: PropTypes.string,
-    dateOfBirth: PropTypes.string,
+    createdAt: PropTypes.string,
     gender: PropTypes.string,
     totalitems: PropTypes.number.isRequired,
     matchedItems: PropTypes.number.isRequired,

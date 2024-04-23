@@ -160,7 +160,7 @@ export default function UserPage() {
                   { id: 'totalitems', label: 'Total Items',align:'center' },
                   { id: 'matcheditems', label: 'Matched Items', align: 'center' },
                   { id: 'gender', label: 'Gender', align: 'center' },
-                  { id: 'dateofbirth', label: 'Date of Birth', align: 'center' },
+                  { id: 'createdat', label: 'Registered ', align: 'center' },
                   { id: 'status', label: 'Status' },
                   { id: '' },
                 ]}
@@ -183,7 +183,7 @@ export default function UserPage() {
                       users={row}
                       isDeleted={row.isDeleted}
                       gender={row.gender} 
-                      dateOfBirth={row.dateOfBirth}
+                      createdAt={row.createdAt}
                       handleDelete={() => handleDeleteUser(row.id)}
                     />
                   ))}
