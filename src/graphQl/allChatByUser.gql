@@ -9,6 +9,19 @@ export const ALL_CHAT_BY_USER = gql`
             email
             firstName
             lastName
+            id
+        }
+        cash
+        sourceItem {
+            askingPrice
+            mainImageUrl
+            title
+        }
+        targetItem {
+            askingPrice
+            description
+            mainImageUrl
+            title
         }
     }
 }

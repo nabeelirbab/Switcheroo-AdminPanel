@@ -27,11 +27,18 @@ const ChatList = ({ user }) => {
   console.log(data?.allChatByUser, 'chats');
 
   const chats =
-    data?.allChatByUser.map((chatData) => ({
-      id: chatData.offerId,
-      name: `${chatData.targetUser[0].firstName} ${chatData.targetUser[0].lastName}`,
-      avatarUrl: chatData.targetUser[0].avatarUrl,
-    })) || [];
+    data?.allChatByUser
+      .filter((chatData) => chatData.targetUser[0].id) 
+      .map((chatData) => ({
+        id: chatData.offerId,
+        cash: chatData.cash,
+        name: `${chatData.targetUser[0].firstName} ${chatData.targetUser[0].lastName}`,
+        sourceItemTitle:
+          chatData.sourceItem && chatData.sourceItem[0]?.title ? chatData.sourceItem[0].title : '',
+        targetItemTitle: `${chatData.targetItem[0].title}`,
+        userAvatar: chatData.targetUser[0]?.avatarUrl,
+        avatarUrl: chatData.targetItem[0].mainImageUrl,
+      })) || [];
 
   const {
     data: messagesData,
@@ -99,7 +106,14 @@ const ChatList = ({ user }) => {
                 <ListItemAvatar sx={{ marginTop: '0px' }}>
                   <Avatar alt={chat.name} src={chat.avatarUrl} />
                 </ListItemAvatar>
-                <ListItemText sx={{ fontWeight: 700 }} primary={chat.name} />
+
+                <ListItemText
+                  sx={{ fontWeight: 700 }}
+                  primary={`${chat.cash ? `$${chat.cash}` : ''} ${chat.targetItemTitle} ${
+                    chat.sourceItemTitle ? `- ${chat.sourceItemTitle}` : ''
+                  }`}
+                  secondary={chat.name}
+                />
               </ListItem>
             ))}
           </List>
@@ -142,14 +156,14 @@ const ChatList = ({ user }) => {
                     display: 'flex',
                     justifyContent: message.createdByUserId !== user.id ? 'flex-end' : 'flex-start',
                     marginBottom: '10px',
-                    alignItems: 'flex-start'
+                    alignItems: 'flex-start',
                   }}
                 >
                   {message.createdByUserId !== user.id ? (
                     <Avatar
                       alt={message.sender}
-                      src={selectedChat.avatarUrl}
-                      sx={{ width: '40px', height: '40px', marginRight: '10px', marginTop:'5px' }}
+                      src={message.targetUser[0].avatarUrl}
+                      sx={{ width: '40px', height: '40px', marginRight: '10px', marginTop: '5px' }}
                     />
                   ) : (
                     <div style={{ flex: 1 }} />
@@ -181,11 +195,11 @@ const ChatList = ({ user }) => {
                       {message.createdAt} 
                     </Typography> */}
                   </div>
-                  {message.createdByUserId === user.id ? ( 
+                  {message.createdByUserId === user.id ? (
                     <Avatar
                       alt={message.sender}
-                      src={message.targetUser.avatarUrl}
-                      sx={{ width: '40px', height: '40px', marginLeft: '10px', marginTop:'5px' }}
+                      src={message.targetUser[0].avatarUrl}
+                      sx={{ width: '40px', height: '40px', marginLeft: '10px', marginTop: '5px' }}
                     />
                   ) : (
                     <div style={{ flex: 1 }} />
