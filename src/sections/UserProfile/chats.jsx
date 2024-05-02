@@ -28,7 +28,7 @@ const ChatList = ({ user }) => {
 
   const chats =
     data?.allChatByUser
-      .filter((chatData) => chatData.targetUser[0].id) 
+      .filter((chatData) => chatData.targetUser[0].id)
       .map((chatData) => ({
         id: chatData.offerId,
         cash: chatData.cash,
@@ -144,9 +144,16 @@ const ChatList = ({ user }) => {
                 alt={selectedChat.name}
                 src={selectedChat.avatarUrl}
               />
-              <Typography variant="h5" gutterBottom style={{ marginLeft: '10px' }}>
-                {selectedChat.name}
-              </Typography>
+              <Box>
+                <Typography variant="h5" gutterBottom style={{ marginLeft: '10px' }}>
+                  {selectedChat.cash && '$'}
+                  {selectedChat.cash ? `${selectedChat.cash}` : ''} {selectedChat.targetItemTitle}{' '}
+                  {selectedChat.sourceItemTitle ? `- ${selectedChat.sourceItemTitle}` : ''}
+                </Typography>
+                <Typography variant="subtitle" color='GrayText' gutterBottom sx={{marginLeft:'10px'}} >
+                  {selectedChat.name}
+                </Typography>
+              </Box>
             </div>
             <div style={{ maxHeight: '900px', overflowY: 'auto' }}>
               {sortedMessages.map((message) => (

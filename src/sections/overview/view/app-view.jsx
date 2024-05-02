@@ -179,6 +179,22 @@ export default function AppView() {
   const itemEngagement = itemEngagementData;
   const offerEngagement = offerEngagementData;
 
+  const getWeekDates = (week, year) => {
+    const date = new Date(year, 0, 1 + (week - 1) * 7);
+    const startDate = new Date(date.setDate(date.getDate() - date.getDay() + 1));
+    const endDate = new Date(date.setDate(date.getDate() + 6));
+
+    // Convert to string in the format "DD Month YYYY"
+    const startDateString = `${startDate.getDate()} ${startDate.toLocaleString('default', {
+      month: 'long',
+    })} ${startDate.getFullYear()}`;
+    const endDateString = `${endDate.getDate()} ${endDate.toLocaleString('default', {
+      month: 'long',
+    })} ${endDate.getFullYear()}`;
+
+    return `${startDateString} - ${endDateString}`;
+  };
+
   // User Engagement data for daily, monthly, and weekly engagement
   const dailyData = userEngagement.userEngagement.dailyRegistrationTrend.slice(-10).map((item) => ({
     date: item.date.split('T')[0],
@@ -195,9 +211,10 @@ export default function AppView() {
   const weeklyData = userEngagement.userEngagement.weeklyRegistrationTrend
     .slice(-12)
     .map((item) => ({
-      label: `${item.week} week/${item.year}`,
+      label: getWeekDates(item.week, item.year),
       count: item.count,
     }));
+  console.log(weeklyData, 'USER ENGAGEMENT WEEKLY DATA');
 
   // Item Engagement data for daily, monthly, and weekly engagement
 
@@ -218,7 +235,7 @@ export default function AppView() {
   const weeklyItemData = itemEngagement.itemEngagement.weeklyRegistrationTrend
     .slice(-12)
     .map((item) => ({
-      label: `${item.week} week/${item.year}`,
+      label: getWeekDates(item.week, item.year),
       count: item.count,
     }));
 
@@ -235,7 +252,7 @@ export default function AppView() {
   }));
 
   const weeklyOfferData = offerEngagement.offerEngagement.weeklyTrend.slice(-12).map((item) => ({
-    label: `${item.week} week/${item.year}`,
+    label: getWeekDates(item.week, item.year),
     count: item.count,
   }));
 
