@@ -3,9 +3,18 @@ import { gql } from '@apollo/client';
 export const NOTIFICATIONS = gql`
   query Notifications {
     notifications {
+      createdAt
       description
       id
       title
+      deliveryStatus {
+            id
+            notificationId
+            status
+            userEmail
+            userId
+            userName
+        }
     }
   }
 `;

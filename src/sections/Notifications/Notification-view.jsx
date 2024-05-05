@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 import { toast, ToastContainer } from 'react-toastify';
 import { useQuery, useMutation } from '@apollo/client';
@@ -20,13 +21,17 @@ import {
 
 import { NOTIFICATIONS, CREATE_CUSTOM_NOTIFICATION } from '../../graphQl/getNotifications.gql';
 
-// ----------------------------------------------------------------------
-
 export default function NotificationView() {
+  const navigateTo = useNavigate();
   const { loading, error, data, refetch } = useQuery(NOTIFICATIONS);
-  const [createCusotmNotification] = useMutation(CREATE_CUSTOM_NOTIFICATION);
+  const [createCustomNotification] = useMutation(CREATE_CUSTOM_NOTIFICATION);
   const [openModal, setOpenModal] = useState(false);
   const [notificationData, setNotificationData] = useState({ title: '', description: '' });
+
+
+  const handleNotificationClick = (notification) => {
+    console.log('Notification clicked, Data being passed:', notification);
+  };
 
   const handleOpenModal = () => {
     setOpenModal(true);
@@ -60,7 +65,7 @@ export default function NotificationView() {
 
   const handleSendNotification = async () => {
     try {
-      await createCusotmNotification({
+      await createCustomNotification({
         variables: {
           title: notificationData.title,
           description: notificationData.description,
@@ -90,7 +95,7 @@ export default function NotificationView() {
 
   return (
     <Container maxWidth="xl">
-      <Typography variant="h4" sx={{ mb: 5 }}>
+      <Typography variant="h4" sx={{ mb: 3 }}>
         Notifications
       </Typography>
 
@@ -98,21 +103,62 @@ export default function NotificationView() {
         Create Notification
       </Button>
 
-      {/* Notification List */}
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 4,
+          padding: 3,
+          backgroundColor: '#f5f5f5',
+          borderRadius: '10px',
+          boxShadow: '10px rgba(0, 0, 0, 1)',
+        }}
+      >
         {data.notifications
           .slice()
           .reverse()
           .map((notification, index) => (
-            <Card key={notification.id} sx={{ minWidth: 300, maxWidth: 300, minHeight: 150 }}>
-              <CardContent>
-                <Typography variant="h6" sx={{ mb: 1, fontWeight: 'bold', color: 'primary.main' }}>
-                  Notification {data.notifications.length - index}
-                </Typography>
-                <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                  Title : {notification.title}
-                </Typography>
-                <Typography variant="body2">Description : {notification.description}</Typography>
+            <Card key={notification.id} sx={{ minWidth: 330, maxWidth: 330, minHeight: 150 }}>
+              <CardContent
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  height: '100%',
+                }}
+              >
+                <div>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems:'center' }}>
+                    <Typography
+                      variant="h6"
+                      sx={{ mb: 1, fontWeight: 'bold', color: 'primary.main' }}
+                    >
+                      Notification {data.notifications.length - index}
+                    </Typography>
+                    <Typography variant="caption">
+                      {new Date(notification.createdAt).toLocaleString()}
+                    </Typography>
+                  </Box>
+
+                  <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                    Title: {notification.title}
+                  </Typography>
+                  <Typography align="justify" variant="body2">
+                    Description: {notification.description}
+                  </Typography>
+                </div>
+                <Button
+                  sx={{ mt: 2, width: '50%', fontSize: '14px' }}
+                  variant="outlined"
+                  onClick={() => {
+                    handleNotificationClick(notification);
+                    navigateTo(`/notifications/${notification.id}`, {
+                      state: { notification, index },
+                    });
+                  }}
+                >
+                  View Status
+                </Button>
               </CardContent>
             </Card>
           ))}

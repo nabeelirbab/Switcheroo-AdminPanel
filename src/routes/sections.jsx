@@ -4,10 +4,9 @@ import { Outlet, Navigate, useRoutes } from 'react-router-dom';
 
 import DashboardLayout from 'src/layouts/dashboard';
 
-
 const isAuthenticated = () => {
   const user = localStorage.getItem('user');
-  const authenticated = !!user; 
+  const authenticated = !!user;
   return authenticated;
 };
 
@@ -28,9 +27,9 @@ const ReportedUserPage = lazy(() => import('src/pages/reported-user'));
 const ProductsPage = lazy(() => import('src/pages/products'));
 const TotalItemsPage = lazy(() => import('src/pages/items'));
 const NotificationsPage = lazy(() => import('src/pages/notifications'));
+const NotificationsDetailsPage = lazy(() => import('src/sections/Notifications/Notification-details'));
 const Page404 = lazy(() => import('src/pages/page-not-found'));
 const UserProfile = lazy(() => import('src/pages/user-profile'));
-
 
 const routes = [
   {
@@ -48,6 +47,7 @@ const routes = [
       { path: 'reported-user', element: <ProtectedRoute element={<ReportedUserPage />} /> },
       { path: 'total-items', element: <ProtectedRoute element={<TotalItemsPage />} /> },
       { path: 'notifications', element: <ProtectedRoute element={<NotificationsPage />} /> },
+      { path: 'notifications/:notificationId', element: <NotificationsDetailsPage /> },
       { path: 'user-profile/:userId', element: <ProtectedRoute element={<UserProfile />} /> },
     ],
   },
