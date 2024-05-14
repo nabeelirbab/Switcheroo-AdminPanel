@@ -26,8 +26,13 @@ export default function NotificationView() {
   const { loading, error, data, refetch } = useQuery(NOTIFICATIONS);
   const [createCustomNotification] = useMutation(CREATE_CUSTOM_NOTIFICATION);
   const [openModal, setOpenModal] = useState(false);
-  const [notificationData, setNotificationData] = useState({ title: '', description: '' });
+  const [notificationData, setNotificationData] = useState({ title: '', description: '', gender: '', item: '' });
 
+  React.useEffect(() => {
+    if (!openModal) {
+      setNotificationData({ title: '', description: '', gender: '', item: '' });
+    }
+  }, [openModal]);
 
   const handleNotificationClick = (notification) => {
     console.log('Notification clicked, Data being passed:', notification);
@@ -55,7 +60,7 @@ export default function NotificationView() {
       gender: e.target.value,
     }));
   };
-
+  
   const handleItemChange = (e) => {
     setNotificationData((prevData) => ({
       ...prevData,
@@ -184,6 +189,9 @@ export default function NotificationView() {
             maxWidth: '80%',
           }}
         >
+          <Button onClick={handleCloseModal} sx={{ position: 'absolute', top: 0, right: 0 }}>
+            x
+          </Button>
           <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ mb: 2 }}>
             Add Notification
           </Typography>
