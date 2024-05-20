@@ -6,7 +6,6 @@ import { Box, Grid, Paper, Divider, Container, Typography } from '@mui/material'
 export default function NotificationDetails() {
   const location = useLocation();
   const notification = location.state?.notification;
-  //   const index = location.state?.index;
 
   return (
     <Container maxWidth="xl">

@@ -8,11 +8,11 @@ import {
   Box,
   Card,
   Modal,
-  Radio,
   Button,
+  Checkbox,
   Container,
   TextField,
-  RadioGroup,
+  FormGroup,
   Typography,
   CardContent,
   CircularProgress,
@@ -26,11 +26,24 @@ export default function NotificationView() {
   const { loading, error, data, refetch } = useQuery(NOTIFICATIONS);
   const [createCustomNotification] = useMutation(CREATE_CUSTOM_NOTIFICATION);
   const [openModal, setOpenModal] = useState(false);
-  const [notificationData, setNotificationData] = useState({ title: '', description: '', gender: '', item: '' });
+  const [notificationData, setNotificationData] = useState({
+    title: '',
+    description: '',
+    gender: '',
+    item: '',
+  });
+  const [formErrors, setFormErrors] = useState({
+    title: '',
+    description: '',
+    filters: '',
+  });
+  const [allUsers, setAllUsers] = useState(false);
 
   React.useEffect(() => {
     if (!openModal) {
       setNotificationData({ title: '', description: '', gender: '', item: '' });
+      setFormErrors({ title: '', description: '', filters: '' });
+      setAllUsers(false);
     }
   }, [openModal]);
 
@@ -52,30 +65,63 @@ export default function NotificationView() {
       ...prevData,
       [name]: value,
     }));
+    setFormErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: value ? '' : 'This field is required',
+    }));
   };
 
-  const handleGenderChange = (e) => {
+  const handleCheckboxChange = (e, category) => {
+    const { name, checked } = e.target;
     setNotificationData((prevData) => ({
       ...prevData,
-      gender: e.target.value,
+      [category]: checked ? name : '',
     }));
   };
-  
-  const handleItemChange = (e) => {
-    setNotificationData((prevData) => ({
-      ...prevData,
-      item: e.target.value,
-    }));
+
+  const handleAllUsersChange = (e) => {
+    const { checked } = e.target;
+    setAllUsers(checked);
+    if (checked) {
+      setNotificationData((prevData) => ({
+        ...prevData,
+        gender: '',
+        item: '',
+      }));
+      setFormErrors((prevErrors) => ({
+        ...prevErrors,
+        filters: '',
+      }));
+    }
   };
 
   const handleSendNotification = async () => {
+    const { title, description, gender, item } = notificationData;
+    const errors = {
+      title: title ? '' : 'Title is required',
+      description: description ? '' : 'Description is required',
+      filters: '',
+    };
+
+    if (!allUsers && (!gender || !item)) {
+      errors.filters = 'Either "All Users" must be checked or both gender and item filters must be selected.';
+      toast.error(errors.filters);
+    }
+
+    setFormErrors(errors);
+
+    if (!title || !description || errors.filters) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
     try {
       await createCustomNotification({
         variables: {
-          title: notificationData.title,
-          description: notificationData.description,
-          genderFilter: notificationData.gender,
-          itemFilter: notificationData.item,
+          title,
+          description,
+          genderFilter: allUsers ? null : gender,
+          itemFilter: allUsers ? null : item,
         },
       });
       handleCloseModal();
@@ -133,7 +179,9 @@ export default function NotificationView() {
                 }}
               >
                 <div>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems:'center' }}>
+                  <Box
+                    sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                  >
                     <Typography
                       variant="h6"
                       sx={{ mb: 1, fontWeight: 'bold', color: 'primary.main' }}
@@ -203,6 +251,8 @@ export default function NotificationView() {
             onChange={handleInputChange}
             inputProps={{ maxLength: 500 }}
             sx={{ mb: 2 }}
+            error={!!formErrors.title}
+            helperText={formErrors.title}
           />
           <TextField
             fullWidth
@@ -214,32 +264,89 @@ export default function NotificationView() {
             rows={4}
             inputProps={{ maxLength: 3000 }}
             sx={{ mb: 2 }}
+            error={!!formErrors.description}
+            helperText={formErrors.description}
           />
-          <RadioGroup
-            aria-label="gender"
-            name="gender"
-            value={notificationData.gender}
-            onChange={handleGenderChange}
-            sx={{ flexDirection: 'row', mb: 2 }}
-          >
-            <FormControlLabel value="Male" control={<Radio />} label="Male" />
-            <FormControlLabel value="Female" control={<Radio />} label="Female" />
-            <FormControlLabel value="Others" control={<Radio />} label="Others" />
-          </RadioGroup>
-          <RadioGroup
-            aria-label="item"
-            name="item"
-            value={notificationData.item}
-            onChange={handleItemChange}
-            sx={{ flexDirection: 'row', mb: 2 }}
-          >
-            <FormControlLabel value="No Items" control={<Radio />} label="No Items" />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={allUsers}
+                onChange={handleAllUsersChange}
+              />
+            }
+            label="All Users"
+            sx={{ mb: 2 }}
+          />
+          <Typography variant="subtitle1" sx={{ mb: 2 }}>
+            Gender
+          </Typography>
+          <FormGroup row sx={{ mb: 2 }}>
             <FormControlLabel
-              value="At Least One Item"
-              control={<Radio />}
+              control={
+                <Checkbox
+                  name="Male"
+                  checked={notificationData.gender === 'Male'}
+                  onChange={(e) => handleCheckboxChange(e, 'gender')}
+                  disabled={allUsers}
+                />
+              }
+              label="Male"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name="Female"
+                  checked={notificationData.gender === 'Female'}
+                  onChange={(e) => handleCheckboxChange(e, 'gender')}
+                  disabled={allUsers}
+                />
+              }
+              label="Female"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name="Others"
+                  checked={notificationData.gender === 'Others'}
+                  onChange={(e) => handleCheckboxChange(e, 'gender')}
+                  disabled={allUsers}
+                />
+              }
+              label="Others"
+            />
+          </FormGroup>
+          <Typography variant="subtitle1" sx={{ mb: 2 }}>
+            Item
+          </Typography>
+          <FormGroup row sx={{ mb: 2 }}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name="No Items"
+                  checked={notificationData.item === 'No Items'}
+                  onChange={(e) => handleCheckboxChange(e, 'item')}
+                  disabled={allUsers}
+                />
+              }
+              label="No Items"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name="At Least One Item"
+                  checked={notificationData.item === 'At Least One Item'}
+                  onChange={(e) => handleCheckboxChange(e, 'item')}
+                  disabled={allUsers}
+                />
+              }
               label="At Least One Item"
             />
-          </RadioGroup>
+          </FormGroup>
+          {formErrors.filters && (
+            <Typography color="error" variant="body2" sx={{ mb: 2 }}>
+              {formErrors.filters}
+            </Typography>
+          )}
           <Button variant="contained" onClick={handleSendNotification}>
             Send
           </Button>
