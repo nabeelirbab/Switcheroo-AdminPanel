@@ -29,7 +29,7 @@ const navConfig = [
   },
   {
     title: 'Total Items',
-    path: '/total-items',
+    path: '/items',
     icon: icon('ic_cart'),
   },
   {

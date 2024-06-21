@@ -26,6 +26,7 @@ const LoginPage = lazy(() => import('src/pages/login'));
 const ReportedUserPage = lazy(() => import('src/pages/reported-user'));
 const ProductsPage = lazy(() => import('src/pages/products'));
 const TotalItemsPage = lazy(() => import('src/pages/items'));
+const ItemPage = lazy(() => import('src/sections/Reported-items/view/product'));
 const NotificationsPage = lazy(() => import('src/pages/notifications'));
 const NotificationsDetailsPage = lazy(() => import('src/sections/Notifications/Notification-details'));
 const Page404 = lazy(() => import('src/pages/page-not-found'));
@@ -45,7 +46,8 @@ const routes = [
       { path: 'user', element: <ProtectedRoute element={<UserPage />} /> },
       { path: 'reported-products', element: <ProtectedRoute element={<ProductsPage />} /> },
       { path: 'reported-user', element: <ProtectedRoute element={<ReportedUserPage />} /> },
-      { path: 'total-items', element: <ProtectedRoute element={<TotalItemsPage />} /> },
+      { path: 'items', element: <ProtectedRoute element={<TotalItemsPage />} /> },
+      { path: 'item/:id', element: <ProtectedRoute element={<ItemPage />} /> },
       { path: 'notifications', element: <ProtectedRoute element={<NotificationsPage />} /> },
       { path: 'notifications/:notificationId', element: <NotificationsDetailsPage /> },
       { path: 'user-profile/:userId', element: <ProtectedRoute element={<UserProfile />} /> },

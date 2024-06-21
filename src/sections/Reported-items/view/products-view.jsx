@@ -1,4 +1,5 @@
-import { useState } from 'react';
+// ProductsView.js
+import React, { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 
 import Fade from '@mui/material/Fade';
@@ -29,6 +30,8 @@ export default function ProductsView() {
   if (itemerror) return <p>Error: {itemerror.message}</p>;
 
   const allItems = itemdata.allItemsInDatabase.data;
+
+  console.log(allItems, 'ITEMSS...');
 
   if (allItems.length === 0) {
     return (

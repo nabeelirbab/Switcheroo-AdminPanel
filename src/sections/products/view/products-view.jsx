@@ -59,7 +59,7 @@ export default function ProductsView() {
     return (
       <Container>
         <Box sx={{ display: 'flex', alignItems: 'baseline' }}>
-          <Typography variant="h4" sx={{ p: '20px 10px 20px 20px' }}>
+          <Typography variant="h4" sx={{ p: '20px 10px 20px 0px' }}>
             Reported Items -
           </Typography>
           <Typography variant="h5" sx={{ p: '20px 0px', color: 'grey' }}>
