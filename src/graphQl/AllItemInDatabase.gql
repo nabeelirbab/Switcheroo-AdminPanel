@@ -13,6 +13,8 @@ export const TOTAL_ITEMS = gql`
         isDeleted
         categories
         imageUrls
+        longitude,
+        latitude,
       }
     }
   }

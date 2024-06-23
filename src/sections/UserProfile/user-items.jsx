@@ -1,8 +1,8 @@
+import axios from 'axios';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
 import 'react-image-lightbox/style.css';
 import { useQuery } from '@apollo/client';
-import Lightbox from 'react-image-lightbox';
+import React, { lazy, useState, useEffect } from 'react';
 
 import {
   Box,
@@ -18,6 +18,28 @@ import {
 
 import { GET_ALL_ITEMS_BY_USER } from '../../graphQl/allItemsbyUser.gql';
 
+const Lightbox = lazy(() => import('react-image-lightbox'));
+
+const getLocationName = async (latitude, longitude) => {
+  const API_KEY = 'c73ff3a0eff74fd29028c9ef7cf26e69';
+  try {
+    const response = await axios.get(`https://api.opencagedata.com/geocode/v1/json`, {
+      params: {
+        key: API_KEY,
+        q: `${latitude}+${longitude}`,
+      },
+    });
+    const { results } = response.data;
+    if (results && results.length > 0) {
+      return results[0].formatted;
+    }
+    return 'Unknown location';
+  } catch (error) {
+    console.error('Error fetching location:', error);
+    return 'Unknown location';
+  }
+};
+
 const ListedItems = ({ user }) => {
   console.log(user.id, 'user id passing...');
   const { loading, error, data } = useQuery(GET_ALL_ITEMS_BY_USER, {
@@ -28,7 +50,28 @@ const ListedItems = ({ user }) => {
   const [photoIndex, setPhotoIndex] = useState(0);
   const [currentImages, setCurrentImages] = useState([]);
   const [currentItemIndex, setCurrentItemIndex] = useState(0);
+  const [locations, setLocations] = useState({});
+
   console.log(currentItemIndex)
+
+  useEffect(() => {
+    if (data) {
+      const fetchLocations = async () => {
+        const items = data.allItemsByUser.data.filter((item) => !item.isDeleted);
+        const locationPromises = items.map(async (item) => {
+          const locationName = await getLocationName(item.latitude, item.longitude);
+          return { id: item.id, locationName };
+        });
+        const resolvedLocations = await Promise.all(locationPromises);
+        const newLocations = resolvedLocations.reduce((acc, { id, locationName }) => {
+          acc[id] = locationName;
+          return acc;
+        }, {});
+        setLocations(newLocations);
+      };
+      fetchLocations();
+    }
+  }, [data]);
 
   if (loading)
     return (
@@ -39,7 +82,7 @@ const ListedItems = ({ user }) => {
 
   if (error) return <Typography variant="body1">Error fetching data.</Typography>;
 
-  const items = data?.allItemsByUser?.data.filter((item) => !item.isDeleted) || []; // Filter out deleted items
+  const items = data?.allItemsByUser?.data.filter((item) => !item.isDeleted) || [];
 
   const handleImageClick = (item, index) => {
     const imageUrls =
@@ -47,8 +90,8 @@ const ListedItems = ({ user }) => {
         ? [item.mainImageUrl, ...item.imageUrls]
         : [item.mainImageUrl];
     setCurrentImages(imageUrls);
-    setPhotoIndex(0); // Reset photo index when changing items
-    setCurrentItemIndex(index); // Track current item index
+    setPhotoIndex(0);
+    setCurrentItemIndex(index);
     setIsOpen(true);
   };
 
@@ -68,7 +111,9 @@ const ListedItems = ({ user }) => {
           There are no items listed by this user.
         </Typography>
       ) : (
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '30px', p: '20px', marginBottom: '20px' }}>
+        <Box
+          sx={{ display: 'flex', flexWrap: 'wrap', gap: '30px', p: '20px', marginBottom: '20px' }}
+        >
           {items.map((item, index) => (
             <Card key={item.id} sx={{ width: 350, boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.1)' }}>
               <CardMedia
@@ -87,6 +132,11 @@ const ListedItems = ({ user }) => {
                 <Typography sx={{ pt: '10px' }} variant="body2" color="text.secondary">
                   <strong>Price:</strong> {item.askingPrice} $
                 </Typography>
+                {locations[item.id] && (
+                  <Typography sx={{ pt: '10px' }} variant="body2" color="text.secondary">
+                    <strong>Location:</strong> {locations[item.id]}
+                  </Typography>
+                )}
                 <Divider sx={{ my: 2 }} />
                 <Typography variant="subtitle1" gutterBottom>
                   Categories
@@ -120,7 +170,7 @@ const ListedItems = ({ user }) => {
             setPhotoIndex((photoIndex + currentImages.length - 1) % currentImages.length)
           }
           onMoveNextRequest={() => setPhotoIndex((photoIndex + 1) % currentImages.length)}
-          reactModalStyle={{ overlay: { zIndex: 2000 } }} // Ensure Lightbox appears on top
+          reactModalStyle={{ overlay: { zIndex: 2000 } }}
         />
       )}
     </Card>

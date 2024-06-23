@@ -51,6 +51,8 @@ export default function ShopProductCard({ product, handleDeleteItem }) {
       mainImageUrl: product.mainImageUrl,
       categories: product.categories,
       imageUrls: product.imageUrls,
+      longitude: product.longitude,
+      latitude: product.latitude,
     };
     navigate(`/item/${product.id}`, {
       state: { product: productData },
@@ -174,6 +176,9 @@ ShopProductCard.propTypes = {
     priceSale: PropTypes.number,
     categories: PropTypes.arrayOf(PropTypes.string),
     imageUrls: PropTypes.arrayOf(PropTypes.string),
+    longitude: PropTypes.number,
+    latitude: PropTypes.number,
   }),
   handleDeleteItem: PropTypes.func.isRequired,
 };
+
